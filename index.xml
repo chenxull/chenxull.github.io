@@ -6,10 +6,37 @@
     <description>Recent content on Chenxull </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 15 May 2019 13:32:35 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 15 May 2019 13:42:10 +0800</lastBuildDate>
     
 	<atom:link href="https://chenxull.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Golang 中的并发</title>
+      <link>https://chenxull.github.io/post/go_concurrency/</link>
+      <pubDate>Wed, 15 May 2019 13:42:10 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/go_concurrency/</guid>
+      <description>Part III - Concurrency 这篇博文关注于并发 简介 当我在解决一个问题时，特别是如果这是一个新问题，我最初不会考虑并发性是否合适。我首先寻找顺序解决方案，并确保它</description>
+    </item>
+    
+    <item>
+      <title>Golang 中的调度 Part II</title>
+      <link>https://chenxull.github.io/post/go_scheduler/</link>
+      <pubDate>Wed, 15 May 2019 13:41:51 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/go_scheduler/</guid>
+      <description>Part II - Go Scheduler 这是三部分系列中的第二篇文章，它将提供对Go中调度器背后的机制和语义的理解。这篇文章的重点是go程序。 简介 在这个调度系列的第一部分</description>
+    </item>
+    
+    <item>
+      <title>操作系统调度 PartI</title>
+      <link>https://chenxull.github.io/post/os_scheduler/</link>
+      <pubDate>Wed, 15 May 2019 13:41:34 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/os_scheduler/</guid>
+      <description>Part I - 操作系统调度 简介 多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。 OS Scheduler 您的程序只是一系列需要一个接一个顺序执</description>
+    </item>
     
     <item>
       <title>Docker Registry API V2 接口解析（二）</title>
@@ -17,7 +44,7 @@
       <pubDate>Wed, 15 May 2019 13:32:35 +0800</pubDate>
       
       <guid>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/</guid>
-      <description>HTTP API V2 接口解析 1. API Version Check 2. Content Digests a 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用</description>
+      <description>HTTP API V2 接口解析 1. API Version Check 2. Content Digests 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算</description>
     </item>
     
     <item>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>操作系统调度 PartI - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="Part I - 操作系统调度 简介 多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。 OS Scheduler 您的程序只是一系列需要一个接一个顺序执" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/os_scheduler/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="操作系统调度 PartI" />
+<meta property="og:description" content="Part I - 操作系统调度 简介 多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。 OS Scheduler 您的程序只是一系列需要一个接一个顺序执" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/os_scheduler/" />
+<meta property="article:published_time" content="2019-05-15T13:41:34&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:41:34&#43;08:00"/>
+
+<meta itemprop="name" content="操作系统调度 PartI">
+<meta itemprop="description" content="Part I - 操作系统调度 简介 多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。 OS Scheduler 您的程序只是一系列需要一个接一个顺序执">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:41:34&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:41:34&#43;08:00" />
+<meta itemprop="wordCount" content="4591">
+
+
+
+<meta itemprop="keywords" content="翻译,Golang," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="操作系统调度 PartI"/>
+<meta name="twitter:description" content="Part I - 操作系统调度 简介 多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。 OS Scheduler 您的程序只是一系列需要一个接一个顺序执"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">操作系统调度 PartI</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 4591 words </span>
+          <span class="more-meta"> 10 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#part-i-操作系统调度">Part I - 操作系统调度</a>
+<ul>
+<li><a href="#简介">简介</a></li>
+<li><a href="#os-scheduler">OS Scheduler</a></li>
+<li><a href="#executing-instructions">Executing Instructions</a>
+<ul>
+<li><a href="#listing1">Listing1</a></li>
+<li><a href="#listing3">Listing3</a></li>
+</ul></li>
+<li><a href="#thread-states">Thread States</a></li>
+<li><a href="#types-of-work">Types Of Work</a></li>
+<li><a href="#context-switching">Context Switching</a></li>
+<li><a href="#less-is-more">Less Is More</a></li>
+<li><a href="#find-the-balance">Find The Balance</a></li>
+<li><a href="#scheduling-decision-scenario-调度基本决策">Scheduling Decision Scenario 调度基本决策</a></li>
+<li><a href="#小结">小结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="part-i-操作系统调度">Part I - 操作系统调度</h1>
+
+<h2 id="简介">简介</h2>
+
+<p>多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。</p>
+
+<h2 id="os-scheduler">OS Scheduler</h2>
+
+<p>您的程序只是一系列需要一个接一个顺序执行的机器指令。为了实现这一点，操作系统使用了线程的概念。线程的任务是说明并顺序执行分配给它的指令集。执行一直持续到线程不再有指令可执行。这就是为什么我称线程为“执行路径”</p>
+
+<p>您运行的每个程序都创建一个进程，每个进程都有一个初始线程。线程能够创建更多的线程。所有这些不同的线程彼此独立运行，调度决策是在线程级别而不是在进程级别做出的。线程可以并行运行(每个线程在单个内核上轮流运行)，也可以并行运行(每个线程在不同内核上同时运行)。线程还保持自己的状态，以允许安全、本地和独立地执行它们的指令。</p>
+
+<p>如果有线程可以执行，操作系统调度器负责确保内核不空闲。它还必须制造一种错觉，以为所有可以执行的线程都在同时执行。在创建这种错觉的过程中，调度程序需要运行优先级高于低优先级线程的线程。然而，优先级较低的线程不能缺少执行时间。调度程序还需要通过做出快速而明智的决策来尽可能减少调度延迟。</p>
+
+<h2 id="executing-instructions">Executing Instructions</h2>
+
+<p>程序计数器(PC)有时被称为指令指针(IP)，它允许线程跟踪下一条要执行的指令。在大多数处理器中，PC指向下一条指令，而不是当前指令。
+<img src="https://www.ardanlabs.com/images/goinggo/92_figure1.jpeg" alt="" /></p>
+
+<h3 id="listing1">Listing1</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">goroutine 1 [running]:
+   main.example(0xc000042748, 0x2, 0x4, 0x106abae, 0x5, 0xa)
+       stack_trace/example1/example1.go:13 +0x39                 &lt;- LOOK HERE
+   main.main()
+       stack_trace/example1/example1.go:8 +0x72                  &lt;- LOOK HERE</pre></td></tr></table>
+</div>
+</div>
+<p>这些数字代表从各自函数顶部偏移的PC值。<code>+0x39</code>PC偏移值表示如果程序没有死机，线程将在示例函数中执行的下一条指令。如果控制碰巧回到main功能，则<code>0+x72</code>PC偏移值是主功能内部的下一条指令。更重要的是，指针之前的指令告诉你正在执行什么指令。</p>
+
+<p>下面是源码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nf">example</span><span class="p">(</span><span class="nb">make</span><span class="p">([]</span><span class="kt">string</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#34;hello&#34;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="kd">func</span> <span class="nf">example</span><span class="p">(</span><span class="nx">slice</span> <span class="p">[]</span><span class="kt">string</span><span class="p">,</span> <span class="nx">str</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nb">panic</span><span class="p">(</span><span class="s">&#34;want stack trace&#34;</span><span class="p">)</span>
+<span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
+<p>十六进制数<code>+0x39</code>代表<code>example</code>函数内部指令的PC偏移量，该偏移量比该函数的起始指令低57(10进制)字节。在下面的清单3中，您可以从二进制文件中看到示例函数的objdump。找到列在底部的第12条指令。请注意，该指令上方的代码行是panic的的调用。</p>
+
+<h3 id="listing3">Listing3</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">TEXT main.example(SB) stack_trace/example1/example1.go
+func example(slice []string, str string, i int) {
+  0x104dfa0		65488b0c2530000000	MOVQ GS:0x30, CX
+  0x104dfa9		483b6110		CMPQ 0x10(CX), SP
+  0x104dfad		762c			JBE 0x104dfdb
+  0x104dfaf		4883ec18		SUBQ $0x18, SP
+  0x104dfb3		48896c2410		MOVQ BP, 0x10(SP)
+  0x104dfb8		488d6c2410		LEAQ 0x10(SP), BP
+	panic(&#34;Want stack trace&#34;)
+  0x104dfbd		488d059ca20000	LEAQ runtime.types+41504(SB), AX
+  0x104dfc4		48890424		MOVQ AX, 0(SP)
+  0x104dfc8		488d05a1870200	LEAQ main.statictmp_0(SB), AX
+  0x104dfcf		4889442408		MOVQ AX, 0x8(SP)
+  0x104dfd4		e8c735fdff		CALL runtime.gopanic(SB)
+  0x104dfd9		0f0b			UD2              &lt;--- LOOK HERE PC(+0x39)</pre></td></tr></table>
+</div>
+</div>
+<h2 id="thread-states">Thread States</h2>
+
+<p>A Thread can be in one of three states: Waiting, Runnable or Executing.
+- 等待:这意味着线程停止并等待一些东西来继续。这可能是因为等待硬件(磁盘、网络)、操作系统(系统调用)或同步调用(原子、互斥体)。这些类型的延迟是性能不佳的根本原因。
+- 可运行:这意味着线程需要时间在内核上，这样它就可以执行分配给它的机器指令。如果您有很多线程需要时间，那么线程必须等待更长时间才能获得时间。此外，随着更多线程争夺时间，任何给定线程获得的单独时间量都会缩短。这种调度延迟也可能是性能不佳的原因。
+- 执行:这意味着线程已经被放置在一个核心上，并且正在执行它的机器指令。与应用程序相关的工作正在完成。这是每个人都想要的。</p>
+
+<h2 id="types-of-work">Types Of Work</h2>
+
+<p>线程可以做两种类型的工作。第一种叫做CPU-Bound ，第二种叫做IO-Bound。
+- CPU-Bound :这种工作不会造成线程可能处于等待状态的情况。这是一项不断进行计算的工作。将圆周率计算到第n位的线程将是CPU-Bound 。
+- IO-Bound:这种工作会造成线程进入等待状态，这项工作包括请求通过网络访问资源或对操作系统进行系统调用。需要访问数据库的线程将是IO绑定的。我将包括同步事件(互斥体、原子)，这些事件会导致线程作为这个类别的一部分等待。</p>
+
+<h2 id="context-switching">Context Switching</h2>
+
+<p>如果您运行在 Linux, Mac or Windows上，那么您运行在一个具有<strong>抢占式调度程序</strong>的操作系统上。这意味着一些重要的事情。
+- 首先，这意味着当涉及到在任何给定时间选择运行什么线程时，调度器是不可预测的。线程优先级和事件(如在网络上接收数据)使得无法确定调度程序将选择什么样的操作和时间。
+- 第二，这意味着你绝不能基于你有幸经历过但不能保证每次都发生的感知行为来编写代码。允许自己思考很容易，因为我已经看到这种情况以同样的方式发生了1000次，这是有保证的行为。如果您的应用程序需要确定性，<strong>则必须控制线程的同步和编排</strong>。</p>
+
+<p>内核中线程的物理切换被称为上下文切换，当调度程序从内核中取出一个执行线程并用一个可运行线程替换它时，就会出现Context Switching。从运行队列中选择的线程将进入执行状态。被拉的线程可以移回可运行状态(如果它仍然能够运行)，或者移回等待状态(如果由于输入输出绑定类型的请求而被替换)。</p>
+
+<p>Context Switching是昂贵的。</p>
+
+<p>如果您有一个专注于 <strong>IO-Bound work</strong>的程序，那么上下文切换将是一个优势。一旦一个线程进入等待状态，另一个处于可运行状态的线程将取代它的位置。这使得核心总是在工作。这是scheduling最重要的方面之一。如果有工作要做(线程处于可运行状态)，不要让内核空闲。</p>
+
+<p>如果您的程序专注于面向<strong>CPU-Bound work</strong>的工作，那么上下文切换将是一场性能噩梦。由于Thead总是有工作要做，Context Switching 正在阻止这项工作取得进展。这种情况与面向 IO-Bound 负载形成了鲜明的对比。</p>
+
+<h2 id="less-is-more">Less Is More</h2>
+
+<p>在处理器只有一个内核的早期，调度并不太复杂。因为您只有一个处理器和一个内核，所以在任何给定时间只能执行一个线程。其想法是定义一个调度周期，并尝试在该周期内执行所有的可运行线程。没问题:用调度周期除以需要执行的线程数。</p>
+
+<p>例如，如果您将调度器周期定义为10ms(毫秒)，并且有2个线程，那么每个线程都有5毫秒。如果你有5个线程，每个线程得到2毫秒。然而，当您有100个线程时会发生什么？给每个线程10微秒的时间片是行不通的，因为您将在上下文切换中花费大量时间。</p>
+
+<p>你需要的是限制时间片可以有多短。在最后一种情况下，如果最小时间片是2毫秒，并且有100个线程，调度器周期需要增加到2000毫秒或2秒。如果有1000个线程，现在您会看到一个20秒的调度周期。在这个简单的例子中，如果每个线程使用它的完整时间片，那么所有线程运行一次需要20秒。</p>
+
+<p>请注意，这是一个非常简单的世界观。在做出调度决策时，调度程序需要考虑和处理更多的事情。您可以控制应用程序中使用的线程数量。当有更多的线程需要考虑，并且与输入输出相关的工作正在发生时，就会有更多的混乱和不确定的行为。事情需要更长的时间来安排和执行。</p>
+
+<p>这就是为什么游戏规则是“少即是多”。<strong>处于可运行状态的线程越少，意味着调度开销越少，每个线程随着时间推移获得的时间越多。处于可运行状态的线程越多，意味着每个线程随着时间流逝获得的时间越少。这意味着随着时间的推移，你完成的工作也越来越少。</strong></p>
+
+<h2 id="find-the-balance">Find The Balance</h2>
+
+<p>您需要在拥有的内核数量和为应用程序获得最佳吞吐量所需的线程数量之间找到一个平衡。谈到管理这种平衡，线程池是一个很好的答案。我将在第二部分中向您展示，这在Go中不再是必需的。我认为这是Go让多线程应用程序开发变得更容易的一件好事。</p>
+
+<p>在go编码之前，我在的C与C++程序设计学习与实验系统和C#写代码。在该操作系统上，使用IOCP((IO Completion Ports))线程池对于编写多线程软件至关重要。作为一名工程师，您需要计算出您需要多少个线程池以及任何给定池的最大线程数，以最大化您所获得的内核数的吞吐量。</p>
+
+<p>当编写与数据库通信的网络服务时，每个内核3个线程的神奇数量似乎总能在NT上提供最佳吞吐量。换句话说，每个内核3个线程最小化了上下文切换的延迟成本，同时最大化了内核上的执行时间。当创建一个IOCP线程池时，我知道对于我在主机上识别的每个内核，从最少1个线程和最多3个线程开始。</p>
+
+<p>如果我每个内核使用2个线程，完成所有工作需要更长的时间，因为我有空闲时间，而我本来可以完成工作。如果我每个内核使用4个线程，也需要更长的时间，因为我在上下文切换中有更多的延迟。无论出于什么原因，每个内核3个线程的平衡似乎总是NT上的神奇数字.</p>
+
+<p>如果您的服务正在做许多不同类型的工作呢？这可能会造成不同且不一致的延迟。也许它还会产生许多需要处理的不同的系统级事件。也许不可能找到一个对所有不同的工作负荷始终有效的神奇数字。<strong>当谈到使用线程池来调整服务的性能时，找到正确的一致配置可能会变得非常复杂。</strong></p>
+
+<p>##Cache Lines</p>
+
+<p>从主内存访问数据的延迟成本非常高(约100到约300个时钟周期)，以至于处理器和内核都有本地缓存来将数据保存在需要它的硬件线程附近。根据所访问的缓存，从缓存中访问数据的成本要低得多(约3到约40个时钟周期)。如今，性能的一个方面是如何高效地将数据输入处理器，以减少这些数据访问延迟。<strong>编写改变状态的多线程应用程序需要考虑缓存系统的机制。</strong></p>
+
+<p><img src="https://www.ardanlabs.com/images/goinggo/92_figure2.png" alt="" /></p>
+
+<p>使用<code>cache line</code>在处理器和主存储器之间交换数据。<code>cache line</code>是在主存储器和高速缓存系统之间交换的64字节内存块。每个内核都有自己需要的<code>cache line</code>，这意味着硬件使用<code>value semantics</code>。这就是多线程应用程序中内存突变会造成性能噩梦的原因。</p>
+
+<p>当并行运行的多个线程访问相同的数据值或者甚至彼此接近的数据值时，它们将访问同一高速缓存行(cache line)上的数据。在任何内核上运行的任何线程都将获得同一缓存行的自己的副本。</p>
+
+<p><img src="https://www.ardanlabs.com/images/goinggo/92_figure3.png" alt="" />
+如果给定内核上的一个线程对其缓存行的副本进行了更改，那么通过硬件，同一缓存行的所有其他副本都必须被标记为脏的。当线程试图对脏缓存行进行读或写访问时，需要主存储器访问(大约100到大约300个时钟周期)来获得缓存行的新副本。</p>
+
+<p>也许在双核处理器上这没什么大不了的，但是并行运行32个线程的32核处理器在同一高速缓存行上访问和更改数据呢？一个有两个物理处理器，每个处理器有16个内核的系统怎么样？由于处理器间通信的延迟增加，情况会更糟。应用程序将会在内存中反复运行，性能将会非常糟糕，而且很可能你不会明白为什么。</p>
+
+<p>这被称为<a href="https://youtu.be/WDIkqP4JbkE">缓存一致性问题</a>，也引入了错误共享等问题。当编写将改变共享状态的多线程应用程序时，必须考虑缓存系统。</p>
+
+<h2 id="scheduling-decision-scenario-调度基本决策">Scheduling Decision Scenario 调度基本决策</h2>
+
+<p>想象一下，我让你根据我给你的高级信息编写操作系统调度程序。想想这个你必须考虑的场景。请记住，这是调度程序在做出调度决策时必须考虑的许多有趣的事情之一。</p>
+
+<p>您启动应用程序，主线程被创建并在核心1上执行。当线程开始执行其指令时，因为需要数据，所以正在检索高速缓存行(cache lines )。线程现在决定为一些并发处理创建一个新线程。问题是这样的。一旦线程被创建并准备就绪，调度器应该:
+- 上下文切换核心1的主线程？这样做有助于提高性能，因为这个新线程需要已经缓存的相同数据的可能性非常大。但是主线程没有得到它的完整时间片。
+-  在主线程的时间片完成之前，线程是否要等待内核1变得可用？线程没有运行，但是一旦启动，获取数据的延迟将被消除。
+-  让线程等待下一个可用的内核吗？这意味着所选内核的缓存行将被刷新、检索和复制，从而导致延迟。然而，线程会更快地启动，并且主线程可以完成它的时间片。
+这些是操作系统调度程序在做出调度决策时需要考虑的有趣问题。幸运的是，不是我做的。我能告诉你的是，如果有一个空闲的内核，它将被使用。当线程可以运行时，您希望它们运行。</p>
+
+<h2 id="小结">小结</h2>
+
+<p>这篇文章的第一部分提供了在编写多线程应用程序时，关于线程和操作系统调度器的一些见解。这些也是Go计划程序要考虑的事情。在下一篇文章中，我将描述Go调度器的语义以及它们如何与这些信息相关联。最后，通过运行几个程序，您将看到所有这些都在起作用。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%BF%BB%E8%AF%91/">翻译</a>
+          <a href="/tags/golang/">Golang</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/go_scheduler/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Golang 中的调度 Part II</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/registry_api_%E6%8E%A5%E5%8F%A32/">
+            <span class="next-text nav-default">Docker Registry API V2 接口解析（二）</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

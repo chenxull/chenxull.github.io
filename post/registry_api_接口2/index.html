@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="十三画生" /><meta name="description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests a 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+<meta name="author" content="十三画生" /><meta name="description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
 
 
 
@@ -39,26 +39,26 @@
 
 
 <meta property="og:title" content="Docker Registry API V2 接口解析（二）" />
-<meta property="og:description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests a 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用" />
+<meta property="og:description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/" />
 <meta property="article:published_time" content="2019-05-15T13:32:35&#43;08:00"/>
 <meta property="article:modified_time" content="2019-05-15T13:32:35&#43;08:00"/>
 
 <meta itemprop="name" content="Docker Registry API V2 接口解析（二）">
-<meta itemprop="description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests a 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用">
+<meta itemprop="description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算">
 
 
 <meta itemprop="datePublished" content="2019-05-15T13:32:35&#43;08:00" />
 <meta itemprop="dateModified" content="2019-05-15T13:32:35&#43;08:00" />
-<meta itemprop="wordCount" content="6153">
+<meta itemprop="wordCount" content="6152">
 
 
 
 <meta itemprop="keywords" content="Docker,registry," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Docker Registry API V2 接口解析（二）"/>
-<meta name="twitter:description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests a 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用"/>
+<meta name="twitter:description" content="HTTP API V2 接口解析 1. API Version Check 2. Content Digests 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -126,7 +126,7 @@
       <div class="post-meta">
         <span class="post-time"> 2019-05-15 </span>
         
-          <span class="more-meta"> 6153 words </span>
+          <span class="more-meta"> 6152 words </span>
           <span class="more-meta"> 13 mins read </span>
         <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
       </div>
@@ -162,8 +162,7 @@
 
 <h2 id="2-content-digests">2. Content Digests</h2>
 
-<p>a
-这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算法来独立计算和验证。如果这样的标识符能够以安全的方式进行传输，人们可以从不安全的来源检索内容，独立计算，并确定获得了正确了内容。</p>
+<p>这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算法来独立计算和验证。如果这样的标识符能够以安全的方式进行传输，人们可以从不安全的来源检索内容，独立计算，并确定获得了正确了内容。</p>
 
 <p>我们称这个标识符为摘要（degest）。摘要是序列化散列的结果，由算法和十六进制组成。该算法识别用于计算摘要。十六进制部分是哈希的十六进制编码的结果。
 | digest | description |
@@ -1073,7 +1072,11 @@ Content-Length: None</pre></td></tr></table>
           <a href="/tags/registry/">registry</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/os_scheduler/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">操作系统调度 PartI</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/registry_api_%E6%8E%A5%E5%8F%A3/">
             <span class="next-text nav-default">Docker Registry API V2 接口解析（一）</span>
             <span class="next-text nav-mobile">Next</span>

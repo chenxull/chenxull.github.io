@@ -3,8 +3,53 @@
   
   <url>
     <loc>https://chenxull.github.io/</loc>
-    <lastmod>2019-05-15T13:32:35+08:00</lastmod>
+    <lastmod>2019-05-15T13:42:10+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/golang/</loc>
+    <lastmod>2019-05-15T13:42:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/go_concurrency/</loc>
+    <lastmod>2019-05-15T13:42:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/</loc>
+    <lastmod>2019-05-15T13:42:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/</loc>
+    <lastmod>2019-05-15T13:42:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/%E7%BF%BB%E8%AF%91/</loc>
+    <lastmod>2019-05-15T13:42:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/go_scheduler/</loc>
+    <lastmod>2019-05-15T13:41:51+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/os_scheduler/</loc>
+    <lastmod>2019-05-15T13:41:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -18,18 +63,6 @@
     <lastmod>2019-05-15T13:32:35+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/post/</loc>
-    <lastmod>2019-05-15T13:32:35+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/</loc>
-    <lastmod>2019-05-15T13:32:35+08:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
