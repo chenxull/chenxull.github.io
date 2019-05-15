@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CI/CD on Chenxull </title>
+    <link>https://chenxull.github.io/tags/ci/cd/</link>
+    <description>Recent content in CI/CD on Chenxull </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 15 May 2019 14:08:35 +0800</lastBuildDate>
+    
+	<atom:link href="https://chenxull.github.io/tags/ci/cd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>开发链路的安全</title>
+      <link>https://chenxull.github.io/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</link>
+      <pubDate>Wed, 15 May 2019 14:08:35 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</guid>
+      <description>1.The State of Your Supply Chain 在供应链中可能存在依赖的漏洞，包的漏洞，开源软件的漏洞。 故意的漏洞后门 妥协下载 2.容器应用开发的供应链 整个容器分发周期的生命流程</description>
+    </item>
+    
+  </channel>
+</rss>
