@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Golang 中的并发</title>
+      <title>Golang 中的并发 Part III</title>
       <link>https://chenxull.github.io/post/go_concurrency/</link>
       <pubDate>Wed, 15 May 2019 13:42:10 +0800</pubDate>
       
@@ -30,7 +30,7 @@
     </item>
     
     <item>
-      <title>操作系统调度 PartI</title>
+      <title>操作系统调度 Part I</title>
       <link>https://chenxull.github.io/post/os_scheduler/</link>
       <pubDate>Wed, 15 May 2019 13:41:34 +0800</pubDate>
       
