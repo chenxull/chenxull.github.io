@@ -51,7 +51,7 @@
 
 <meta itemprop="datePublished" content="2019-05-15T13:53:45&#43;08:00" />
 <meta itemprop="dateModified" content="2019-05-15T13:53:45&#43;08:00" />
-<meta itemprop="wordCount" content="6110">
+<meta itemprop="wordCount" content="6092">
 
 
 
@@ -126,7 +126,7 @@
       <div class="post-meta">
         <span class="post-time"> 2019-05-15 </span>
         
-          <span class="more-meta"> 6110 words </span>
+          <span class="more-meta"> 6092 words </span>
           <span class="more-meta"> 13 mins read </span>
         <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
       </div>
@@ -149,6 +149,7 @@
 <li><a href="#utils">utils</a>
 <ul>
 <li><a href="#clair">clair</a></li>
+<li><a href="#email">email</a></li>
 <li><a href="#registry">registry</a>
 <ul>
 <li><a href="#repository-go"><strong>repository.go</strong></a></li>
@@ -375,12 +376,15 @@
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>其他组件通过调用这里面的方法，来对 clair 进行操作，完成镜像扫描的工作。对 clair 有以下五中操作:
-- ScanLayer：将 layer 的信息发送到clair 的<code>c.endpoint+&quot;/v1/layers&quot;</code>路由，触发扫描任务
-- GetResult：获取 layer 详细的vulnerability信息，<code>c.endpoint+&quot;/v1/notifications/&quot;+id+&quot;?limit=2&quot;</code>
-- GetNotification：获取 notification 的详细信息，<code>c.endpoint+&quot;/v1/layers/&quot;+layerName+&quot;?features&amp;vulnerabilities&quot;</code>
-- DeleteNotification：删除 clair 中的notification ，<code>c.endpoint+&quot;/v1/notifications/&quot;+id</code>
-- ListNamespaces：删除 clair 中的namespaces，<code>c.endpoint+&quot;/v1/namespaces&quot;</code></p>
+<p>其他组件通过调用这里面的方法，来对 clair 进行操作，完成镜像扫描的工作。对 clair 有以下五中操作:</p>
+
+<ul>
+<li>ScanLayer：将 layer 的信息发送到clair 的<code>c.endpoint+&quot;/v1/layers&quot;</code>路由，触发扫描任务</li>
+<li>GetResult：获取 layer 详细的vulnerability信息，<code>c.endpoint+&quot;/v1/notifications/&quot;+id+&quot;?limit=2&quot;</code></li>
+<li>GetNotification：获取 notification 的详细信息，<code>c.endpoint+&quot;/v1/layers/&quot;+layerName+&quot;?features&amp;vulnerabilities&quot;</code></li>
+<li>DeleteNotification：删除 clair 中的notification ，<code>c.endpoint+&quot;/v1/notifications/&quot;+id</code></li>
+<li>ListNamespaces：删除 clair 中的namespaces，<code>c.endpoint+&quot;/v1/namespaces&quot;</code></li>
+</ul>
 
 <p>提供了一些工具函数用来解析 clair 中的数据，具体有以下的函数：
 - ParseClairSev：为 harbor 解析 clair 扫描出漏洞的安全级别
@@ -407,8 +411,9 @@
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>###email
-邮箱功能</p>
+<h3 id="email">email</h3>
+
+<p>邮箱功能</p>
 
 <h3 id="registry">registry</h3>
 
@@ -440,20 +445,23 @@
 <span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<p>这些构建的请求都是发送给私有的 registry 的，在<code>repository</code>中定义了如下的方法：
-- ListTag：获取镜像仓库中的镜像的标签,构建请求的格式为<code>%s/v2/%s/tags/list&quot;, endpoint, repoName</code>
-- ManifestExist:检查 repository 中是否有指定镜像的manifest，构建的请求为<code>HEAD /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
-- PullManifest: 获取镜像的 manifest ，pull 一个镜像分为二个过程，第一步就是找镜像的 manifest，构建的请求为<code>GET /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
-- PushManifest：上传通过name和reference标识的manifest，其中reference为tag或digest，构建的请求为<code>PUT /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
-- DeleteManifest：删除由名称和引用标识的manifest，manifest只能通过摘要删除。构建的请求为<code>DELETE /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
-- MountBlob：从另一个存储库中装载由装载参数标识的blob，具体的用法是在给镜像retag的时候使用到，如果原镜像和目标进行不在同一个repository 中，就需要进行 Mount 操作。构建的请求为<code>POST /v2/&lt;name&gt;/blobs/uploads/?mount=&lt;digest&gt;&amp;from=&lt;repository name&gt;</code>
-- DeleteTag：调用<code>DeleteManifest</code>来删除
-- BlobExist：检查 repository 中是否存在指定的 Blob，构建的请求为<code>HEAD  /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code>
-- PullBlob：从 digest的registry中检索blob，构建的请求为<code>GET /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code>
-- initiateBlobUpload： 启动可恢复的blob上传，构建的请求为<code>POST /v2/&lt;name&gt;/blobs/uploads/</code>
-- monolithicBlobUpload：完成指定 uuid 的镜像上传，构建的请求为<code>PUT /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;?digest=&lt;digest&gt;</code>
-- PushBlob：先调用<code>initiateBlobUpload</code>创建目录，然后调用<code>monolithicBlobUpload</code>上传指定uuid的<code>blob</code>。
-- DeleteBlob：删除指定 repository和digest标识的blob， 构建的请求为<code>DELETE /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code></p>
+<p>这些构建的请求都是发送给私有的 registry 的，在<code>repository</code>中定义了如下的方法：</p>
+
+<ul>
+<li>ListTag：获取镜像仓库中的镜像的标签,构建请求的格式为<code>%s/v2/%s/tags/list&quot;, endpoint, repoName</code></li>
+<li>ManifestExist:检查 repository 中是否有指定镜像的manifest，构建的请求为<code>HEAD /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code></li>
+<li>PullManifest: 获取镜像的 manifest ，pull 一个镜像分为二个过程，第一步就是找镜像的 manifest，构建的请求为<code>GET /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code></li>
+<li>PushManifest：上传通过name和reference标识的manifest，其中reference为tag或digest，构建的请求为<code>PUT /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code></li>
+<li>DeleteManifest：删除由名称和引用标识的manifest，manifest只能通过摘要删除。构建的请求为<code>DELETE /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code></li>
+<li>MountBlob：从另一个存储库中装载由装载参数标识的blob，具体的用法是在给镜像retag的时候使用到，如果原镜像和目标进行不在同一个repository 中，就需要进行 Mount 操作。构建的请求为<code>POST /v2/&lt;name&gt;/blobs/uploads/?mount=&lt;digest&gt;&amp;from=&lt;repository name&gt;</code></li>
+<li>DeleteTag：调用<code>DeleteManifest</code>来删除</li>
+<li>BlobExist：检查 repository 中是否存在指定的 Blob，构建的请求为<code>HEAD  /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code></li>
+<li>PullBlob：从 digest的registry中检索blob，构建的请求为<code>GET /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code></li>
+<li>initiateBlobUpload： 启动可恢复的blob上传，构建的请求为<code>POST /v2/&lt;name&gt;/blobs/uploads/</code></li>
+<li>monolithicBlobUpload：完成指定 uuid 的镜像上传，构建的请求为<code>PUT /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;?digest=&lt;digest&gt;</code></li>
+<li>PushBlob：先调用<code>initiateBlobUpload</code>创建目录，然后调用<code>monolithicBlobUpload</code>上传指定uuid的<code>blob</code>。</li>
+<li>DeleteBlob：删除指定 repository和digest标识的blob， 构建的请求为<code>DELETE /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code></li>
+</ul>
 
 <p>关于上述请求的详解请参考：HTTP API V2 接口详细解析</p>
 
