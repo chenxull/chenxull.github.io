@@ -6,10 +6,19 @@
     <description>Recent content in registry on Chenxull </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 15 May 2019 13:26:42 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 15 May 2019 13:32:35 +0800</lastBuildDate>
     
 	<atom:link href="https://chenxull.github.io/tags/registry/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Docker Registry API V2 接口解析（二）</title>
+      <link>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/</link>
+      <pubDate>Wed, 15 May 2019 13:32:35 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/</guid>
+      <description>HTTP API V2 接口解析 1. API Version Check 2. Content Digests a 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用</description>
+    </item>
     
     <item>
       <title>Docker Registry API V2 接口解析（一）</title>
