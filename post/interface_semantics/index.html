@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Golang 中的 interface Semantics - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="Interface Semantics 值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/interface_semantics/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Golang 中的 interface Semantics" />
+<meta property="og:description" content="Interface Semantics 值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/interface_semantics/" />
+<meta property="article:published_time" content="2019-05-15T13:47:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:47:00&#43;08:00"/>
+
+<meta itemprop="name" content="Golang 中的 interface Semantics">
+<meta itemprop="description" content="Interface Semantics 值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:47:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:47:00&#43;08:00" />
+<meta itemprop="wordCount" content="3183">
+
+
+
+<meta itemprop="keywords" content="翻译,Golang," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Golang 中的 interface Semantics"/>
+<meta name="twitter:description" content="Interface Semantics 值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Golang 中的 interface Semantics</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 3183 words </span>
+          <span class="more-meta"> 7 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#interface-semantics">Interface Semantics</a>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#language-mechanics">Language Mechanics</a></li>
+<li><a href="#method-sets">Method Sets</a>
+<ul>
+<li><a href="#原因一">原因一</a></li>
+<li><a href="#原因二">原因二</a></li>
+</ul></li>
+<li><a href="#interfaces-are-valueless">Interfaces Are Valueless</a></li>
+<li><a href="#小结">小结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="interface-semantics">Interface Semantics</h1>
+
+<p>值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个强大的代码库心智模型。它也有助于最小化错误、副作用和意外行为。</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>在这篇文章中，我将探索Go中的<code>interface</code>如何提供值和指针语义形式。我将介绍相关的语言机制，并向你展示这些语义的深度。然后，我将展示当你以一种危险的方式混合这些语义时，编译器是如何试图为你说情的。</p>
+
+<h2 id="language-mechanics">Language Mechanics</h2>
+
+<p>接口可以存储自己的值副本(值语义)，一个 value 通过和<code>interface</code>共享存储值的地址副本。这就是接口的值/指针语义的来源。这段代码向您展示了这些语义是如何工作的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="mo">01</span> <span class="kn">package</span> <span class="nx">main</span>
+<span class="mo">02</span>
+<span class="mo">03</span> <span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+<span class="mo">04</span>
+<span class="mo">05</span> <span class="kd">type</span> <span class="nx">printer</span> <span class="kd">interface</span> <span class="p">{</span>
+<span class="mo">06</span>     <span class="nb">print</span><span class="p">()</span>
+<span class="mo">07</span> <span class="p">}</span>
+<span class="mi">08</span>
+<span class="mi">09</span> <span class="kd">type</span> <span class="nx">user</span> <span class="kd">struct</span> <span class="p">{</span>
+<span class="mi">10</span>     <span class="nx">name</span> <span class="kt">string</span>
+<span class="mi">11</span> <span class="p">}</span>
+<span class="mi">12</span>
+<span class="mi">13</span> <span class="kd">func</span> <span class="p">(</span><span class="nx">u</span> <span class="nx">user</span><span class="p">)</span> <span class="nb">print</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">14</span>     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;User Name:&#34;</span><span class="p">,</span> <span class="nx">u</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+<span class="mi">15</span> <span class="p">}</span>
+<span class="mi">16</span>
+<span class="mi">17</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">18</span>     <span class="nx">u</span> <span class="o">:=</span> <span class="nx">user</span><span class="p">{</span><span class="s">&#34;Bill&#34;</span><span class="p">}</span>
+<span class="mi">19</span>
+<span class="mi">20</span>     <span class="nx">entities</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">printer</span><span class="p">{</span>
+<span class="mi">21</span>         <span class="nx">u</span><span class="p">,</span>
+<span class="mi">22</span>         <span class="o">&amp;</span><span class="nx">u</span><span class="p">,</span>
+<span class="mi">23</span>     <span class="p">}</span>
+<span class="mi">24</span>
+<span class="mi">25</span>     <span class="nx">u</span><span class="p">.</span><span class="nx">name</span> <span class="p">=</span> <span class="s">&#34;Bill_CHG&#34;</span>
+<span class="mi">26</span>
+<span class="mi">27</span>     <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">e</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">entities</span> <span class="p">{</span>
+<span class="mi">28</span>         <span class="nx">e</span><span class="p">.</span><span class="nb">print</span><span class="p">()</span>
+<span class="mi">29</span>     <span class="p">}</span>
+<span class="mi">30</span> <span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
+<p>代码在第05行声明了一个名为<code>printer</code>的接口，其中一个行为称为<code>print</code>。然后，在第09行声明一个名为<code>user</code>的具体类型，它在第13行使用<code>值语义</code>实现打印机接口。</p>
+
+<p>在<code>main</code>函数中，在第18行创建了一个用户值，并用名称Bill初始化。然后在第20行，声明并初始化一片<code>printer</code>接口值。通过在索引0内部存储用户值的副本，初始化的切片正在第21行使用<strong>值语义</strong>。然后在第22行，<strong>指针语义</strong>被用来在索引1中存储用户地址的副本。</p>
+
+<p>在第25行，用户值被改变，最后在第27行，切片重复显示存储在相应接口值内的每个用户的名称。</p>
+
+<p>下面的图显示了如何存在两个不同的用户值。索引0引用第18行声明的原始用户值的副本(值语义)，索引1引用第18行声明的原始值(指针语义)。
+<img src="https://www.ardanlabs.com/images/goinggo/85_figure1.png" alt="" /></p>
+
+<p>最终输出显示，只有索引1(使用指针语义的接口值)看到了变化。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">User Name: Bill
+User Name: Bill_CHG</pre></td></tr></table>
+</div>
+</div>
+<p>请记住，在我要求你阅读的其他帖子中，选择一个语义而不是另一个语义是在你声明或使用类型时做出的决定。您希望尽可能保持语义的一致性。我们刚刚经历的这个例子向您展示了如何将不同的语义应用于接口。</p>
+
+<h2 id="method-sets">Method Sets</h2>
+
+<p>在超越<strong>接口</strong>提供的值/指针语义之前，检查方法集的规则很重要。<strong>方法集规则有助于描述给定类型的数据何时可以存储在接口内部</strong>。这些规则都是关于完整性的。</p>
+
+<p><img src="https://www.ardanlabs.com/images/goinggo/85_figure2.png" alt="" /></p>
+
+<p>规则声明:
+- 当使用值接收器(值语义)实现接口时，<strong>值和地址的副本</strong>可以存储在接口内。
+- 然而，当使用指针接收器(指针语义)实现接口时，只能存储地址的副本。</p>
+
+<p>这引出了一个问题——当使用指针语义时，为什么不允许值的副本存储在接口中？<strong>答案是两部分的完整性问题。</strong></p>
+
+<h3 id="原因一">原因一</h3>
+
+<p><strong>首先</strong>，你不能保证每个值都是可寻址的。如果不能获取一个值的地址，它就不能被共享，因此不能使用指针接收器方法。</p>
+
+<p>下一个例子展示了如何不能总是在Go中获取值的地址。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="mo">01</span> <span class="kn">package</span> <span class="nx">main</span>
+<span class="mo">02</span>
+<span class="mo">03</span> <span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+<span class="mo">04</span>
+<span class="mo">05</span> <span class="kd">type</span> <span class="nx">notifier</span> <span class="kd">interface</span> <span class="p">{</span>
+<span class="mo">06</span>     <span class="nf">notify</span><span class="p">()</span>
+<span class="mo">07</span> <span class="p">}</span>
+<span class="mi">08</span>
+<span class="mi">09</span> <span class="kd">type</span> <span class="nx">duration</span> <span class="kt">int</span>
+<span class="mi">10</span>
+<span class="mi">11</span> <span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">duration</span><span class="p">)</span> <span class="nf">notify</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">12</span>     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Sending Notification in&#34;</span><span class="p">,</span> <span class="o">*</span><span class="nx">d</span><span class="p">)</span>
+<span class="mi">13</span> <span class="p">}</span>
+<span class="mi">14</span>
+<span class="mi">15</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">16</span>     <span class="nf">duration</span><span class="p">(</span><span class="mi">42</span><span class="p">).</span><span class="nf">notify</span><span class="p">()</span>
+<span class="mi">17</span> <span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
+<p>上述代码声明了一个名为<code>duration</code>的类型，并在第11行使用<strong>指针</strong>语义实现了<code>notifier</code>接口。在第16行的主函数中，值42被转换为类型<code>duration</code>的值，然后调用<code>notify</code>方法。对<code>notify</code>方法的调用会导致以下编译器错误:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">main.go:16: cannot call pointer method on duration(42)
+main.go:16: cannot take the address of duration(42)</pre></td></tr></table>
+</div>
+</div>
+<p>因为数字在Go中是常数，所以它们<strong>只在编译时存在，没有地址</strong>。<code>notify</code>方法要求共享<code>duration</code>值，这是不可能的。这解释了为什么使用指针语义实现的接口只允许存储地址副本的第一个原因。<strong>编译器不能假设它可以为使用指针语义实现接口的类型，获取任何给定值的地址。</strong></p>
+
+<h3 id="原因二">原因二</h3>
+
+<p><strong>第二个原因同样重要</strong>，我认为这是<strong>完整性</strong>的巨大胜利。再次查看指针语义的方法集规则。
+<img src="https://www.ardanlabs.com/images/goinggo/85_figure3.png" alt="" /></p>
+
+<p>如果使用<strong>指针语义实现接口</strong>，规则的这一部分将阻止您在接口中存储值(值语义)的副本。该规则强化了这样一种观点，即如果您将语义从指针更改为值，它就越过了一条危险的线。如果<strong>您使用指针接收器实现接口，则只能与接口共享值，而不能存储实际值</strong>。你永远不能假设指针指向的任何<strong>值的副本</strong>都是安全的。这就是为什么指针语义的“store value”框是红色的。</p>
+
+<p>再次查看方法集规则的值语义:
+<img src="https://www.ardanlabs.com/images/goinggo/85_figure4.png" alt="" /></p>
+
+<p>如果使用值语义实现接口，规则的这一部分允许您在<strong>接口内存储值</strong>(值语义)和<strong>地址</strong>(指针语义)的<strong>副本</strong>。该规则支持这样的想法，即如果将语义从值更改为指针，它可能是安全的。然而，有一句话与这个想法有关。<strong>混合语义是一个一致性问题</strong>，必须作为一个例外来执行。<strong>一致性</strong>是一切，混合语义会在代码中产生意想不到的副作用。这就是为什么值语义的“存储指针”框是黄色的。 <strong>不推荐在值接受者中存储指针地址的副本</strong></p>
+
+<h2 id="interfaces-are-valueless">Interfaces Are Valueless</h2>
+
+<p>您可能会想，<strong>因为接口值的第二个字总是存储在其中的具体值的地址，所以总会有一个地址可以用来调用指针接收器方法</strong>。那么，当指针语义被用来实现接口时，为什么要限制存储一个值呢？</p>
+
+<p>接口值的第二个字存储地址这一事实无关紧要。如果您在定义方法集规则时考虑这个实现细节，那么您实际上是允许实现细节潜入规范中。从规范的角度来看，任何东西是如何实现的都是无关紧要的，因为实现总是在变化。</p>
+
+<p>我希望您理解，从我们的代码角度来看，接口值是“valueless”。接口值本身没有什么具体的东西。</p>
+
+<p>下一个例子提供了帮助解释这一点的代码。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="mo">01</span> <span class="kn">package</span> <span class="nx">main</span>
+<span class="mo">02</span>
+<span class="mo">03</span> <span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+<span class="mo">04</span>
+<span class="mo">05</span> <span class="kd">type</span> <span class="nx">notifier</span> <span class="kd">interface</span> <span class="p">{</span>
+<span class="mo">06</span>     <span class="nf">notify</span><span class="p">()</span>
+<span class="mo">07</span> <span class="p">}</span>
+<span class="mi">08</span>
+<span class="mi">09</span> <span class="kd">type</span> <span class="nx">duration</span> <span class="kt">int</span>
+<span class="mi">10</span>
+<span class="mi">11</span> <span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="nx">duration</span><span class="p">)</span> <span class="nf">notify</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">12</span>     <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Sending Notification in&#34;</span><span class="p">,</span> <span class="nx">d</span><span class="p">)</span>
+<span class="mi">13</span> <span class="p">}</span>
+<span class="mi">14</span>
+<span class="mi">15</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">16</span>     <span class="kd">var</span> <span class="nx">n</span> <span class="nx">notifier</span>
+<span class="mi">17</span>     <span class="nx">n</span> <span class="p">=</span> <span class="nf">duration</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="mi">18</span>     <span class="nx">n</span><span class="p">.</span><span class="nf">notify</span><span class="p">()</span>
+<span class="mi">19</span> <span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
+<p>在第16行的中，声明了一个名为n的接口类型<code>notifier</code>程序变量，并将其设置为零值，即<code>nil</code>接口值。变量n是<code>valueless</code>的，直到第17行接口值才具有任何具体状态。</p>
+
+<p>唯一使接口具体化的是存储在其中的数据。方法集规则根据方法集的实现方式(使用值或指针语义)定义可以存储哪些数据(值或地址)。完整性和语义是规则的定义。所有这些实际上是如何完成的是一个实现细节。</p>
+
+<p>当比较两个接口值时，比较的是它们内部的<strong>具体数据，而不是接口值本身</strong>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="mo">01</span> <span class="kn">package</span> <span class="nx">main</span>
+<span class="mo">02</span>
+<span class="mo">03</span> <span class="kn">import</span> <span class="s">&#34;fmt&#34;</span>
+<span class="mo">04</span>
+<span class="mo">05</span> <span class="kd">type</span> <span class="nx">errorString</span> <span class="kd">struct</span> <span class="p">{</span>
+<span class="mo">06</span>     <span class="nx">s</span> <span class="kt">string</span>
+<span class="mo">07</span> <span class="p">}</span>
+<span class="mi">08</span>
+<span class="mi">09</span> <span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="nx">errorString</span><span class="p">)</span> <span class="nf">Error</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+<span class="mi">10</span>     <span class="k">return</span> <span class="nx">e</span><span class="p">.</span><span class="nx">s</span>
+<span class="mi">11</span> <span class="p">}</span>
+<span class="mi">12</span>
+<span class="mi">13</span> <span class="kd">func</span> <span class="nf">New</span><span class="p">(</span><span class="nx">text</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="mi">14</span>     <span class="k">return</span> <span class="nx">errorString</span><span class="p">{</span><span class="nx">text</span><span class="p">}</span>
+<span class="mi">15</span> <span class="p">}</span>
+<span class="mi">16</span>
+<span class="mi">17</span> <span class="kd">var</span> <span class="nx">ErrBadRequest</span> <span class="p">=</span> <span class="nf">New</span><span class="p">(</span><span class="s">&#34;Bad Request&#34;</span><span class="p">)</span>
+<span class="mi">18</span>
+<span class="mi">19</span> <span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="mi">20</span>     <span class="nx">err</span> <span class="o">:=</span> <span class="nf">webCall</span><span class="p">()</span>
+<span class="mi">21</span>     <span class="k">if</span> <span class="nx">err</span> <span class="o">==</span> <span class="nx">ErrBadRequest</span> <span class="p">{</span>
+<span class="mi">22</span>         <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Interface Values MATCH&#34;</span><span class="p">)</span>
+<span class="mi">23</span>     <span class="p">}</span>
+<span class="mi">24</span> <span class="p">}</span>
+<span class="mi">25</span>
+<span class="mi">27</span> <span class="kd">func</span> <span class="nf">webCall</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+<span class="mi">28</span>     <span class="k">return</span> <span class="nf">New</span><span class="p">(</span><span class="s">&#34;Bad Request&#34;</span><span class="p">)</span>
+<span class="mi">29</span> <span class="p">}</span></pre></td></tr></table>
+</div>
+</div>
+<p>在第05行到第15行，我从错误包中复制了默认<code>error</code>类型的实现，只做了一个更改。我在第13行实现的新函数是使用<strong>值语义</strong>，而不是指针语义。它在返回的错误接口值中存储一个<strong>errorString</strong>值，而不是它的地址。</p>
+
+<p>在第17行，为“Bad Request”错误声明了一个<code>error</code>接口变量。跳到第27行，<code>webCall</code>函数返回一个新的<code>error</code>接口值，并带有相同的消息“Bad Request”。然后在第19行的主函数中，调用webCall函数，并将返回的错误接口值与错误接口变量进行比较。</p>
+
+<p>当您运行该程序时，您将看到两个错误接口值是等效的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Interface Values MATCH</pre></td></tr></table>
+</div>
+</div>
+<h2 id="小结">小结</h2>
+
+<p>这篇文章提供了另一个例子，说明了<strong>值和指针语义</strong>如何在Go中编写代码中发挥重要作用。<strong>接口</strong>可以存储自己的值副本(值语义)或值地址副本(指针语义)。我想展示方法集规则是如何通过不允许从<strong>指针到值的语义变化</strong>来提供完整性检查的。这助长了这样一种观点，即指针指向的值的复制是不安全（ it is not safe to make a copy of the value that is pointed to by a pointer. ）。语义的这种混合必须认真对待。</p>
+
+<p>当您继续在Go中编写代码时，请查看您为任何给定类型使用的语义。在代码审查期间，寻找给定类型的数据和违反它的问题代码在语义上的一致性。每一条规则都有例外，但我想确保例外是作为一种有意识的选择而发生的。</p>
+
+<p><strong>为什么说在指针接受者方法中，指针指向的值的复制时不安全的？</strong>
+因为无法确保每一个值的地址都是可寻址的，如果你不能获取一个值的地址，它就不能被共享，因此不能使用指针接收器方法。比如说在 go 中，数字常量只在<strong>编译期存在，其是没有地址的</strong>。还有一点原因就是<code>interface</code>的规则做了强制要求</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%BF%BB%E8%AF%91/">翻译</a>
+          <a href="/tags/golang/">Golang</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/interface_values_are_valueless/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Golang 中的 Interface Value 是 Valueless</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/go_concurrency/">
+            <span class="next-text nav-default">Golang 中的并发 Part III</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

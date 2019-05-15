@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Language Mechanics On Memory Profiling Part 3 - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="Part3 Language Mechanics On Memory Profiling 这篇博文的重点集中在algone函数上因为其使用了io包。使用 algTwo 功能测试内存和 cpu 配置. 下面这个是测试数据: 1 2 3 4 5 6 7 Input: abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/language_mechanics_on_memory_profiling/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Language Mechanics On Memory Profiling Part 3" />
+<meta property="og:description" content="Part3 Language Mechanics On Memory Profiling 这篇博文的重点集中在algone函数上因为其使用了io包。使用 algTwo 功能测试内存和 cpu 配置. 下面这个是测试数据: 1 2 3 4 5 6 7 Input: abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/language_mechanics_on_memory_profiling/" />
+<meta property="article:published_time" content="2019-05-15T13:48:29&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:48:29&#43;08:00"/>
+
+<meta itemprop="name" content="Language Mechanics On Memory Profiling Part 3">
+<meta itemprop="description" content="Part3 Language Mechanics On Memory Profiling 这篇博文的重点集中在algone函数上因为其使用了io包。使用 algTwo 功能测试内存和 cpu 配置. 下面这个是测试数据: 1 2 3 4 5 6 7 Input: abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:48:29&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:48:29&#43;08:00" />
+<meta itemprop="wordCount" content="2820">
+
+
+
+<meta itemprop="keywords" content="翻译,Golang," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Language Mechanics On Memory Profiling Part 3"/>
+<meta name="twitter:description" content="Part3 Language Mechanics On Memory Profiling 这篇博文的重点集中在algone函数上因为其使用了io包。使用 algTwo 功能测试内存和 cpu 配置. 下面这个是测试数据: 1 2 3 4 5 6 7 Input: abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Language Mechanics On Memory Profiling Part 3</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 2820 words </span>
+          <span class="more-meta"> 6 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#part3-language-mechanics-on-memory-profiling">Part3 Language Mechanics On Memory Profiling</a>
+<ul>
+<li><a href="#stack-frames">Stack Frames</a></li>
+<li><a href="#allocations-and-performance">Allocations and Performance</a></li>
+<li><a href="#小结">小结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="part3-language-mechanics-on-memory-profiling">Part3 Language Mechanics On Memory Profiling</h1>
+
+<p>这篇博文的重点集中在<code>algone</code>函数上因为其使用了<code>io</code>包。使用 algTwo 功能测试内存和 cpu 配置.</p>
+
+<p>下面这个是测试数据:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Input:
+abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v i saa bb e l v i saa elvi
+selvielviselvielvielviselvi1elvielviselvis
+
+Output:
+abcElvisaElvisabcElviseElvisaElvisaabeeeElvise l v i saa bb e l v i saa elvi
+selviElviselvielviElviselvi1elviElvisElvis</pre></td></tr></table>
+</div>
+</div>
+<p>下面是 algone 函数的实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func algOne(data []byte, find []byte, repl []byte, output *bytes.Buffer) {
+
+	// Use a bytes Buffer to provide a stream to process.
+	input := bytes.NewBuffer(data)
+
+	// The number of bytes we are looking for.
+	size := len(find)
+
+	// Declare the buffers we need to process the stream.
+	buf := make([]byte, size)
+	end := size - 1
+
+	// Read in an initial number of bytes we need to get started.
+	if n, err := io.ReadFull(input, buf[:end]); err != nil {
+		output.Write(buf[:n])
+		return
+	}
+
+	for {
+
+		// Read in one byte from the input stream.
+		if _, err := io.ReadFull(input, buf[end:]); err != nil {
+
+			// Flush the reset of the bytes we have.
+			output.Write(buf[:end])
+			return
+		}
+
+		// If we have a match, replace the bytes.
+		if bytes.Compare(buf, find) == 0 {
+			output.Write(repl)
+
+			// Read a new initial number of bytes.
+			if n, err := io.ReadFull(input, buf[:end]); err != nil {
+				output.Write(buf[:n])
+				return
+			}
+
+			continue
+		}
+
+		// Write the front byte since it has been compared.
+		output.WriteByte(buf[0])
+
+		// Slice that front byte out.
+		copy(buf, buf[1:])
+	}
+}</pre></td></tr></table>
+</div>
+</div>
+<p>我想知道的是这个函数的性能如何，它给堆带来了什么样的压力。为了了解这一点，我们将运行一个基准测试。</p>
+
+<p>##基准测试
+这是用来测试的基准函数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func BenchmarkAlgorithmOne(b *testing.B) {
+16     var output bytes.Buffer
+17     in := assembleInputStream()
+18     find := []byte(&#34;elvis&#34;)
+19     repl := []byte(&#34;Elvis&#34;)
+20
+21     b.ResetTimer()
+22
+23     for i := 0; i &lt; b.N; i++ {
+24         output.Reset()
+25         algOne(in, find, repl, &amp;output)
+26     }
+27 }</pre></td></tr></table>
+</div>
+</div>
+<p>使用指令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">go test -run none -bench AlgorithmOne -benchtime 3s -benchmem</pre></td></tr></table>
+</div>
+</div>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g261v9t2tzj31ik0380u2.jpg" alt="" />
+运行基准测试后，我们可以看到algOne函数为每个操作分配了2个值，总计117字节。这很好，但是我们需要知道函数中哪些代码行导致了这些分配。为了了解这一点，我们需要为这个基准生成概要数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">go tool pprof -alloc_space memcpu.test mem.out
+list algOne
+Total: 334.03MB
+ROUTINE ======================== test/day418.algOne in /Users/chenxu/code/mygo/src/test/day418/main.go
+      13MB   334.03MB (flat, cum)   100% of Total
+         .          .     79:
+         .          .     80:// algOne is one way to solve the problem.
+         .          .     81:func algOne(data []byte, find []byte, repl []byte, output *bytes.Buffer) {
+         .          .     82:
+         .          .     83:	// Use a bytes Buffer to provide a stream to process.
+         .   321.03MB     84:	input := bytes.NewBuffer(data)
+         .          .     85:
+         .          .     86:	// The number of bytes we are looking for.
+         .          .     87:	size := len(find)
+         .          .     88:
+         .          .     89:	// Declare the buffers we need to process the stream.
+      13MB       13MB     90:	buf := make([]byte, size)
+         .          .     91:	end := size - 1
+         .          .     92:
+         .          .     93:	// Read in an initial number of bytes we need to get started.
+         .          .     94:	if n, err := io.ReadFull(input, buf[:end]); err != nil {
+         .          .     95:		output.Write(buf[:n])</pre></td></tr></table>
+</div>
+</div>
+<p>从上述的 profile 中，可以看出<code>input</code>和<code>buf</code>分配到 heap 上，因为<code>input</code>是指针变量，profile 文件实际上说<code>bytes.Buffer</code>的值<code>input</code>的指针指向正在被分配.因此，让我们首先关注<code>input</code>分配，并理解它分配的原因。</p>
+
+<p>我们可以假设其分配的原因是调用了<code>bytes.NewBuffer</code>，这个函数与 stack 共享了bytes.buffer 的值。但是从上述的flat column 中我们可以看出，这个值的分配是因为<code>algOne</code>函数以某种方式共享它,造成了它的 escape.</p>
+
+<p>使用<code>list Benchmark</code>指令可以得出一下图:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">(pprof) list Benchmark
+Total: 334.03MB
+ROUTINE ======================== test/day418.BenchmarkAlgorithmOne in /Users/chenxu/code/mygo/src/test/day418/main_test.go
+         0   334.03MB (flat, cum)   100% of Total
+         .          .     20:
+         .          .     21:	b.ResetTimer()
+         .          .     22:
+         .          .     23:	for i := 0; i &lt; b.N; i++ {
+         .          .     24:		output.Reset()
+         .   334.03MB     25:		algOne(in, find, repl, &amp;output)
+         .          .     26:	}
+         .          .     27:}
+         .          .     28:
+         .          .     29:// Capture the time it takes to execute algorithm two.
+         .          .     30:func BenchmarkAlgorithmTwo(b *testing.B) {</pre></td></tr></table>
+</div>
+</div>
+<p>从上面的数据可以看出,Benchmark 函数没有直接分配内存,所有的内存都来自与循环函数中.可以发现与之前数据中的内存分配数值相同。</p>
+
+<p>我们仍然不知道为什么<code>bytes.buffer</code>值正在分配。使用<code>go build -gcflags &quot;-m -m&quot;</code>指令就行了，探查器只能告诉您哪些值正在转义，但是build命令可以告诉您原因。</p>
+
+<p>##Compiler Reporting</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./main.go:84:26: inlining call to bytes.NewBuffer func([]byte) *bytes.Buffer { return &amp;bytes.Buffer literal }</pre></td></tr></table>
+</div>
+</div>
+<p>它确认了<code>bytes.NewBuffer</code>的值还没有 escape，因为它被传到了调用 stack 中。这是因为对<code>bytes.NewBuffer</code>的调用从来没有被调用，函数内部的代码是内联的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">input := bytes.NewBuffer(data)</pre></td></tr></table>
+</div>
+</div>
+<p>因为编译器选择内联<code>bytes.NewBuffer</code>函数的调用，上述代码被转换成一下这样</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">input := &amp;bytes.Buffer{buf: data}</pre></td></tr></table>
+</div>
+</div>
+<p>这意味着algOne函数正在直接构造<code>bytes.NewBuffer</code>值。现在的问题是，是什么导致该值从algOnestack框架中溢出？答案在我们在报告中找到的其他5行中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./main.go:84:26: &amp;bytes.Buffer literal escapes to heap
+./main.go:84:26: 	from ~R0 (assign-pair) at ./main.go:84:26
+./main.go:84:26: 	from input (assigned) at ./main.go:84:8
+./main.go:84:26: 	from input (interface-converted) at ./main.go:94:26
+./main.go:84:26: 	from input (passed to call[argument escapes]) at ./main.go:94:26</pre></td></tr></table>
+</div>
+</div>
+<p>上述信息告诉我们，94行的代码造成了这次逃逸，input变量被分配给一个接口值。下面是94行的代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">if n, err := io.ReadFull(input, buf[:end]); err != nil {
+		output.Write(buf[:n])
+		return
+	}</pre></td></tr></table>
+</div>
+</div>
+<p>调用<code>io.ReadFull</code>造成了接口分配（interface assignment）。查看<code>io.ReadFull</code>函数的定义可以发现<code>input</code>的值被<code>Reader</code>接口类型所接收</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func ReadFull(r Reader, buf []byte) (n int, err error) {
+	return ReadAtLeast(r, buf, len(buf))
+}
+
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}</pre></td></tr></table>
+</div>
+</div>
+<p>似乎是将<code>bytes.Buffer</code>的地址传递给调用 stack 并将其存储在<code>Reader</code>接口值中导致了 escape。现在我们可以知道<strong>使用接口是有成本的：分配和间接的。因此，如果不清楚使用接口后如何使得代码变得更好，可能不需要使用接口。</strong>一下是我在代码中使用接口的一些准则。</p>
+
+<p>在这些情况下使用接口：
+- 用户的API需要提供实现细节
+- API(应用编程接口)有多个需要内部维护的实现
+- 部分已经被识别出来的PAI需要修改和解耦合</p>
+
+<p>不需要使用接口的情形:
+- 为了使用接口而使用接口
+- 去实现一种算法
+- 当用户可以声明他们自己的接口时。</p>
+
+<p>将上述代码中的<code>io</code>包给注销掉，使用<code>input.Read(buf)</code>来替代<code>io.ReadFull(input,buf)</code>。修改完成之后查看其内存分配：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Total: 16.50MB
+ROUTINE ======================== test/day418.algOne in /Users/chenxu/code/mygo/src/test/day418/main.go
+   16.50MB    16.50MB (flat, cum)   100% of Total
+         .          .     84:
+         .          .     85:	// The number of bytes we are looking for.
+         .          .     86:	size := len(find)
+         .          .     87:
+         .          .     88:	// Declare the buffers we need to process the stream.
+   16.50MB    16.50MB     89:	buf := make([]byte, size)
+         .          .     90:	end := size - 1
+         .          .     91:
+         .          .     92:	// Read in an initial number of bytes we need to get started.
+         .          .     93:	if n, err := input.Read(buf[:end]); err != nil {
+         .          .     94:		output.Write(buf[:n])</pre></td></tr></table>
+</div>
+</div>
+<p>可以看到只有在创建切片出分配了内存，其他地方没有分配。</p>
+
+<h2 id="stack-frames">Stack Frames</h2>
+
+<p>我们想知道为什么 backing array for buf is allocation，使用<code>go build -gcflags &quot;-m -m&quot;</code>指令查看一下分配情况。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./main.go:89:13: make([]byte, size) escapes to heap
+./main.go:89:13: 	from make([]byte, size) (non-constant size) at ./main.go:89:13</pre></td></tr></table>
+</div>
+</div>
+<p>escape的原因是<code>non-constant size</code>，这说明编译器不知道back array 编译时的大小。</p>
+
+<p>只有<strong>当编译器在编译时知道值的大小时，才能将值放在 stack 上。这是因为对于每个函数，每个stack 框架的大小都在编译时计算的。如果编译器不知道值的大小，它就会被放在 heap 中</strong></p>
+
+<p>为了验证这点，在创建切片时给其分配固定的大小，在此使用基准测试。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">BenchmarkAlgorithmOne-12    	 3000000	      1307 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	test/day418	5.256s</pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">./main.go:83:26: algOne &amp;bytes.Buffer literal does not escape
+./main.go:89:13: algOne make([]byte, 5) does not escape</pre></td></tr></table>
+</div>
+</div>
+<p>89行没有发生逃离到 heap。</p>
+
+<h2 id="allocations-and-performance">Allocations and Performance</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Before any optimization
+BenchmarkAlgorithmOne-8    	2000000 	     2570 ns/op       117 B/op  	      2 allocs/op
+
+Removing the bytes.Buffer allocation
+BenchmarkAlgorithmOne-8    	2000000 	     1814 ns/op         5 B/op  	      1 allocs/op
+
+Removing the backing array allocation
+BenchmarkAlgorithmOne-8    	3000000 	     1720 ns/op         0 B/op  	      0 allocs/op</pre></td></tr></table>
+</div>
+</div>
+<p>通过删除字节分配，我们的性能提高了约29%。当所有分配被移除时，缓冲区和大约33%的速度加快。分配是应用程序性能可能受到影响的地方。</p>
+
+<h2 id="小结">小结</h2>
+
+<p>Go有一些令人惊讶的工具，让您能够理解编译器做出的与转义分析相关的决策。基于这些信息，您可以重构代码以支持将不需要在堆中的值保留在堆栈中。您不会编写零分配软件，但您希望尽可能减少分配。</p>
+
+<p>也就是说，永远不要把性能作为你的首要任务来写代码，因为你不想去猜测性能。将编写针对正确性进行优化的代码作为您的首要任务。这意味着首先关注完整性、可读性和简单性。一旦你有了一个可行的程序，确定这个程序是否足够快。如果速度不够快，那么使用该语言提供的工具来查找和修复您的性能问题。</p>
+
+<p>最主要的一点就是看编译器在编译时，是否知道其值的大小。如果知道其值的大小就会被放在 stack 上，如果不知道就会被放在 heap 上。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%BF%BB%E8%AF%91/">翻译</a>
+          <a href="/tags/golang/">Golang</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/design_philosophy_on_data_and_semantics/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Design Philosophy On Data And Semantics Part 4</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/language_mechanics_on_escape_analysis/">
+            <span class="next-text nav-default">Language Mechanics On Escape Analysis Part2</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

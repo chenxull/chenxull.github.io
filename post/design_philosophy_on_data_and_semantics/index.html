@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Design Philosophy On Data And Semantics Part 4 - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="Part4 Design Philosophy On Data And Semantics 讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Design Philosophy On Data And Semantics Part 4" />
+<meta property="og:description" content="Part4 Design Philosophy On Data And Semantics 讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/" />
+<meta property="article:published_time" content="2019-05-15T13:48:51&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:48:51&#43;08:00"/>
+
+<meta itemprop="name" content="Design Philosophy On Data And Semantics Part 4">
+<meta itemprop="description" content="Part4 Design Philosophy On Data And Semantics 讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:48:51&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:48:51&#43;08:00" />
+<meta itemprop="wordCount" content="3636">
+
+
+
+<meta itemprop="keywords" content="翻译,Golang," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Design Philosophy On Data And Semantics Part 4"/>
+<meta name="twitter:description" content="Part4 Design Philosophy On Data And Semantics 讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Design Philosophy On Data And Semantics Part 4</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 3636 words </span>
+          <span class="more-meta"> 8 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#part4-design-philosophy-on-data-and-semantics">Part4 Design Philosophy On Data And Semantics</a>
+<ul>
+<li><a href="#设计理念">设计理念</a>
+<ul>
+<li><a href="#mental-model">mental model</a></li>
+<li><a href="#debugging">Debugging</a></li>
+<li><a href="#data-oriented-design">Data Oriented Design</a></li>
+<li><a href="#type-is-life">Type (Is Life)</a></li>
+<li><a href="#data-with-capability">Data (With Capability)</a></li>
+<li><a href="#polymorphism-多态">Polymorphism 多态</a></li>
+<li><a href="#prototype-first-approach">Prototype First Approach</a></li>
+</ul></li>
+<li><a href="#semantic-guidelines">Semantic Guidelines</a>
+<ul>
+<li><a href="#built-in-types">Built-In Types</a></li>
+<li><a href="#reference-types">Reference Types</a></li>
+<li><a href="#user-defined-types">User Defined Types</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="part4-design-philosophy-on-data-and-semantics">Part4 Design Philosophy On Data And Semantics</h1>
+
+<p>讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/指针语义的设计理念。</p>
+
+<h2 id="设计理念">设计理念</h2>
+
+<blockquote>
+<p>值语义将值保存在 stack 中，这降低了垃圾回收器的压力。但是值语义要求存储，跟踪
+和维护任何给定值的各个副本。指针语义将值保存在 heap上，这会给垃圾回收器来压
+力。然而，指针语义是高效的，因为只需要存储、跟踪和维护一个值。“-比尔·肯尼迪</p>
+</blockquote>
+
+<p>如果你想要在整个软件中保持完整性和可读性，对于给定类型的数据，value/pointer 语义的一致使用是至关重要的。为什么？因为，如果您在一段数据在函数之间传递时改变了它的语义，那么您就很难维护一个清晰一致的代码心智模型。代码库和团队变得越大，代码库中隐藏的bug、数据竞争和副作用就越多。</p>
+
+<p>我想从一套设计理念开始，这些理念将推动选择一种语义而不是另一种语义的指导方针。</p>
+
+<h3 id="mental-model">mental model</h3>
+
+<blockquote>
+<p>“Let’s imagine a project that’s going to end up with a million lines of code or more. The probability of those projects being successful in the United States these days is very low - well under 50%. That’s debatable”. - Tom Love (inventor of Objective C)</p>
+</blockquote>
+
+<h3 id="debugging">Debugging</h3>
+
+<blockquote>
+<p>“The hardest bugs are those where your mental model of the situation is just wrong, so you can’t see the problem at all” - Brian Kernighan</p>
+</blockquote>
+
+<p>###Readability
+&gt;“C is the best balance I’ve ever seen between power and expressiveness. You can do almost anything you want to do by programming fairly straightforwardly and you will have a very good mental model of what’s going to happen on the machine; you can predict reasonably well how quickly it’s going to run, you understand what’s going on ….” - Brian Kernighan</p>
+
+<p>Writing code that maintains a consistent use of value/pointer semantics for a given type of data is an important way to achieve this.</p>
+
+<h3 id="data-oriented-design">Data Oriented Design</h3>
+
+<blockquote>
+<p>“If you don’t understand the data, you don’t understand the problem. This is because all problems are unique and specific to the data you are working with. When the data is changing, your problems are changing. When your problems are changing, the algorithms (data transformations) needs to change with it.” - Bill Kennedy</p>
+</blockquote>
+
+<p>想想这个。您处理的每个问题都是数据转换问题。您编写的每个函数和运行的每个程序都需要一些输入数据并产生一些输出数据。从这个角度来看，您的软件心智模型是对这些数据转换的理解(即它们是如何在代码库中组织和应用的)。“少即是多”的态度对于用更少的层次、陈述、概括、更少的复杂性和更少的努力来解决问题至关重要。这使您和您的团队的一切都变得更容易，但也使硬件更容易执行这些数据转换</p>
+
+<h3 id="type-is-life">Type (Is Life)</h3>
+
+<blockquote>
+<p>“Integrity means that every allocation, every read of memory and every write of memory is accurate, consistent and efficient. The type system is critical to making sure we have this micro level of integrity.” - William Kennedy</p>
+</blockquote>
+
+<p><strong>如果数据驱动你所做的一切，那么代表数据的类型是至关重要的。</strong>在我的世界“类型就是生命”，因为类型为编译器提供了确保数据完整性的能力。类型还驱动并规定语义规则代码必须尊重其操作的数据。这是正确使用值/指针语义的起点:用类型。</p>
+
+<h3 id="data-with-capability">Data (With Capability)</h3>
+
+<blockquote>
+<p>“Methods are valid when it is practical or reasonable for a piece of data to have a capability.” - William Kennedy</p>
+</blockquote>
+
+<p>值/指针语义的想法不会击中Go开发人员，直到他们必须决定方法的接收器类型。
+这是一个我经常看到的问题:我应该使用<strong>值接收器</strong>还是<strong>指针接收器</strong>？一旦我听到这个问题，我知道开发人员没有很好地掌握这些语义。</p>
+
+<p>方法的目的是提供数据一中能力。想想吧。一段数据可以有做某事的能力。我总是希望将重点放在数据上，因为正是数据驱动了程序的功能。数据驱动您编写的算法、您放置的封装以及您可以实现的性能。</p>
+
+<h3 id="polymorphism-多态">Polymorphism 多态</h3>
+
+<blockquote>
+<p>“Polymorphism means that you write a certain program and it behaves differently depending on the data that it operates on.” - Tom Kurtz (inventor of BASIC)
+一个函数可以根据操作它的数据不同有不同的行为。数据的行为将函数与它们可以接受和使用的具体数据类型分离开来。这是一段数据有能力的一个核心原因。正是这个想法是构建和设计能够适应变化的系统的基石。</p>
+</blockquote>
+
+<h3 id="prototype-first-approach">Prototype First Approach</h3>
+
+<blockquote>
+<p>“Unless the developer has a really good idea of what the software is going to be used for, there’s a very high probability that the software will turn out badly. If the developers don’t know and understand the application well, then it’s crucial to get as much user input and experience as possible.” - Brian Kernighan</p>
+</blockquote>
+
+<p>我希望您始终首先关注<strong>理解具体的数据和算法</strong>，以便让数据转换能够解决问题。首先采用这个原型方法，并编写也可以在生产中部署的具体实现(如果这样做合理且实用的话)。一旦一个具体的实现起作用了，一旦你知道了什么是起作用的，什么是不起作用的，那么就要关注重构，通过赋予数据能力来将实现与具体的数据分离开来。</p>
+
+<p>快速开发的思想，首先先搭建出来一个基本能用的东西，然后才知道什么有用什么没用。</p>
+
+<h2 id="semantic-guidelines">Semantic Guidelines</h2>
+
+<p>在声明特定数据类型时，您必须决定该类型将使用哪个语义、<strong>值或指针</strong>。接受或返回该类型数据的应用编程接口（api）必须为该类型选择的语义。不允许应用编程接口规定或改变语义。他们必须知道数据使用的是什么语义，并符合这一点。这至少部分是如何在大型代码库中实现一致性的。</p>
+
+<p>这些基本的知道规则：
+- 当您声明一个类型时，您必须决定使用什么语义
+- 函数和方法必须尊重给定类型的语义选择
+- 避免让方法接收器使用与给定类型不同的语义。
+- 避免使用与给定类型不同的语义来接受/返回数据的函数。
+- 避免改变给定类型的语义。</p>
+
+<p>这些准则有一些例外，最大的例外是解组（unmarshaling）。解组总是需要使用指针语义。Marshaling和unmarshaling似乎总是规则的例外。</p>
+
+<p>于给定的类型，您如何选择一种语义而不是另一种语义？这些指南将帮助你回答这个问题。下面我们将在某些情况下应用这些准则:</p>
+
+<h3 id="built-in-types">Built-In Types</h3>
+
+<p>Go的内置类型代表数字、文本和布尔数据。应该使用<strong>值</strong>语义来处理这些类型。除非有很好的理由，否则不要使用指针来共享这些类型的值。</p>
+
+<p>下面是<code>strings</code>包中的实现，在设计API时都使用值语义</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func Replace(s, old, new string, n int) string
+func LastIndex(s, sep string) int
+func ContainsRune(s string, r rune) bool</pre></td></tr></table>
+</div>
+</div>
+<h3 id="reference-types">Reference Types</h3>
+
+<p>Reference Types 代表了<code>slice,map,interface,function 和 channel</code>
+这些类型应该使用值语义，因为它们被设计为留在堆栈中并最小化堆压力。它们允许每个函数都有自己的值副本，而不是每个函数调用都会导致潜在的分配。(个人认为这里有点过于果断了,有些时候为了传值方便还是需要使用指针的)这是可能的，<strong>因为这些值包含一个指针，该指针在调用之间共享底层数据结构</strong>。</p>
+
+<p>这几种数据结构<code>slice,map,interface,function 和 channel</code>的底层原理分为二部分,一部分是指另一部分是指针，所以才可以使用值语义进行传递数据。</p>
+
+<p>除非有很好的理由，否则不要使用指针来共享这些类型的值。将调用stack中的slice or map 值共享到Unmarshal函数可能是一个例外。作为一个例子，看看在net包中声明的这两种类型。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">type IP []byte
+type IPMask []byte</pre></td></tr></table>
+</div>
+</div>
+<p>IP和IP掩码类型都基于 slice of bytes。这意味着它们都是引用类型，应该遵循值语义规则。这里有一个名为<code>mask</code>的方法，它是为接受IPMask的IP类型声明的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (ip IP) Mask(mask IPMask) IP {
+    if len(mask) == IPv6len &amp;&amp; len(ip) == IPv4len &amp;&amp; allFF(mask[:12]) {
+        mask = mask[12:]
+    }
+    if len(mask) == IPv4len &amp;&amp; len(ip) == IPv6len &amp;&amp; bytesEqual(ip[:12], v4InV6Prefix) {
+        ip = ip[12:]
+    }
+    n := len(ip)
+    if n != len(mask) {
+        return nil
+    }
+    out := make(IP, n)
+    for i := 0; i &lt; n; i++ {
+        out[i] = ip[i] &amp; mask[i]
+    }
+    return out
+}</pre></td></tr></table>
+</div>
+</div>
+<p>请注意，该方法是一个变异操作，并且使用了值语义应用编程接口样式。它使用一个IP值作为接收方，根据传入的IP掩码值，创建一个新的IP值，并将它的副本返回给调用方。该方法尊重这样一个事实，即<strong>对引用类型使用值语义</strong>。</p>
+
+<p>对于<code>append</code>方法类似</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">var data []string
+data = append(data, &#34;string&#34;)</pre></td></tr></table>
+</div>
+</div>
+<p><code>append</code>使用值语义,您将一个切片值传递到append，在转换后，它将返回一个新的切片值。</p>
+
+<p>例外总是unmarshaling，这需要指针语义。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (ip *IP) UnmarshalText(text []byte) error {
+  	if len(text) == 0 {
+  		*ip = nil
+  		return nil
+  	}
+  	s := string(text)
+  	x := ParseIP(s)
+  	if x == nil {
+  		return &amp;ParseError{Type: &#34;IP address&#34;, Text: s}
+  	}
+  	*ip = x
+  	return nil
+  }</pre></td></tr></table>
+</div>
+</div>
+<p><code>UnmarshalText</code>方法实现了<code>encoding.TextUnmarshaler</code>接口.如果没有使用指针语义，它将不起作用。但这没关系，因为分享value通常是安全的。在unmarshaling之外，如果指针语义正被用于引用类型，则应该引发一个标志。</p>
+
+<h3 id="user-defined-types">User Defined Types</h3>
+
+<p>以 time package 中的设计为例。</p>
+
+<p>大多数时候，你使用值语义的能力是有限的。当数据从一个功能传递到另一个功能时，复制数据是不正确或不合理的。对数据的更改需要隔离为单个值并共享。这时需要使用指针语义。如果你不确定复制是正确的还是合理的，那么使用指针语义。</p>
+
+<p>在<code>F ile</code>包中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func Open(name string) (file *File, err error) {
+    return OpenFile(name, O_RDONLY, 0)
+}</pre></td></tr></table>
+</div>
+</div>
+<p>open函数返回文件类型的指针。这意味着您应该使用指针语义，并始终共享文件值。将语义从指针改为值可能会对您的程序造成毁灭性的打击。当一个函数与您共享一个值时，您应该假设您不允许复制指针指向的值。如果你这样做，结果将是不确定的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (f *File) Chdir() error {
+    if f == nil {
+        return ErrInvalid
+    }
+    if e := syscall.Fchdir(f.fd); e != nil {
+        return &amp;PathError{&#34;chdir&#34;, f.name, e}
+    }
+    return nil
+}</pre></td></tr></table>
+</div>
+</div>
+<p>The Chdir method uses pointer semantics even though the File value is never mutated. The method must respect the semantic convention for the type.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func epipecheck(file *File, e error) {
+    if e == syscall.EPIPE {
+        if atomic.AddInt32(&amp;file.nepipe, 1) &gt;= 10 {
+            sigpipe()
+        }
+    } else {
+        atomic.StoreInt32(&amp;file.nepipe, 0)
+    }
+}</pre></td></tr></table>
+</div>
+</div>
+<h2 id="总结">总结</h2>
+
+<p>值/指针语义的一致使用是我在代码评审中寻找的东西。随着时间的推移，它可以帮助您保持代码的一致性和可预测性。它还允许每个人保持清晰一致的代码心智模型。随着代码库和团队的扩大，值/指针语义的一致使用变得更加重要。</p>
+
+<p>Go的惊人之处在于指针和值语义之间的选择超越了接收器和函数参数的声明。这种机制在golang 中无处不在，从for range的工作原理到接口机制、函数值和切片。在以后的文章中，我将展示值/指针语义在语言的这些不同部分是如何显示的。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%BF%BB%E8%AF%91/">翻译</a>
+          <a href="/tags/golang/">Golang</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/language_mechanics_on_memory_profiling/">
+            <span class="next-text nav-default">Language Mechanics On Memory Profiling Part 3</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

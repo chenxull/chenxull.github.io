@@ -6,10 +6,64 @@
     <description>Recent content in Posts on Chenxull </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 15 May 2019 13:42:10 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 15 May 2019 13:48:51 +0800</lastBuildDate>
     
 	<atom:link href="https://chenxull.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Design Philosophy On Data And Semantics Part 4</title>
+      <link>https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/</link>
+      <pubDate>Wed, 15 May 2019 13:48:51 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/</guid>
+      <description>Part4 Design Philosophy On Data And Semantics 讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/</description>
+    </item>
+    
+    <item>
+      <title>Language Mechanics On Memory Profiling Part 3</title>
+      <link>https://chenxull.github.io/post/language_mechanics_on_memory_profiling/</link>
+      <pubDate>Wed, 15 May 2019 13:48:29 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/language_mechanics_on_memory_profiling/</guid>
+      <description>Part3 Language Mechanics On Memory Profiling 这篇博文的重点集中在algone函数上因为其使用了io包。使用 algTwo 功能测试内存和 cpu 配置. 下面这个是测试数据: 1 2 3 4 5 6 7 Input: abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v</description>
+    </item>
+    
+    <item>
+      <title>Language Mechanics On Escape Analysis Part2</title>
+      <link>https://chenxull.github.io/post/language_mechanics_on_escape_analysis/</link>
+      <pubDate>Wed, 15 May 2019 13:48:06 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/language_mechanics_on_escape_analysis/</guid>
+      <description>Language Mechanics On Escape Analysis 原文 逃逸分析是编译器用来确定程序创建的值的位置的过程。具体来说，编译器执行代码静态扫描来确定一个值是否可以可以放在构造它的函数的s</description>
+    </item>
+    
+    <item>
+      <title>Golang 中 Channel 的特点</title>
+      <link>https://chenxull.github.io/post/behavior_of_channels/</link>
+      <pubDate>Wed, 15 May 2019 13:47:40 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/behavior_of_channels/</guid>
+      <description>The Behavior Of Channels 当我第一次开始使用Go的通道时，我犯了一个错误，把channels看作一个数据结构。我把channels看作一个队列，在gorout</description>
+    </item>
+    
+    <item>
+      <title>Golang 中的 Interface Value 是 Valueless</title>
+      <link>https://chenxull.github.io/post/interface_values_are_valueless/</link>
+      <pubDate>Wed, 15 May 2019 13:47:23 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/interface_values_are_valueless/</guid>
+      <description>Interface Values Are Valueless 简介 最近我在Slack上看到了很多关于接口的问题。大多数情况下，答案都是技术性的，并侧重于实施细节。实现对帮助调试很重要，但是实现对</description>
+    </item>
+    
+    <item>
+      <title>Golang 中的 interface Semantics</title>
+      <link>https://chenxull.github.io/post/interface_semantics/</link>
+      <pubDate>Wed, 15 May 2019 13:47:00 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/interface_semantics/</guid>
+      <description>Interface Semantics 值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个</description>
+    </item>
     
     <item>
       <title>Golang 中的并发 Part III</title>
