@@ -2,38 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://chenxull.github.io/tags/ci/cd/</loc>
+    <lastmod>2019-05-15T14:08:35+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://chenxull.github.io/</loc>
-    <lastmod>2019-05-15T14:41:48+08:00</lastmod>
+    <lastmod>2019-05-15T14:08:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://chenxull.github.io/post/</loc>
-    <lastmod>2019-05-15T14:41:48+08:00</lastmod>
+    <lastmod>2019-05-15T14:08:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://chenxull.github.io/tags/</loc>
-    <lastmod>2019-05-15T14:41:48+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/post/test/</loc>
-    <lastmod>2019-05-15T14:41:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/docker/</loc>
-    <lastmod>2019-05-15T14:41:48+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/ci/cd/</loc>
     <lastmod>2019-05-15T14:08:35+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -169,6 +156,12 @@
     <lastmod>2019-05-15T13:41:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/docker/</loc>
+    <lastmod>2019-05-15T13:32:35+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
