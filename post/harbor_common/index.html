@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Harbor common 文件夹分析 - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="common 文件夹分析 ##api 定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&amp;rdq" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/harbor_common/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Harbor common 文件夹分析" />
+<meta property="og:description" content="common 文件夹分析 ##api 定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&rdq" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/harbor_common/" />
+<meta property="article:published_time" content="2019-05-15T13:53:45&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:53:45&#43;08:00"/>
+
+<meta itemprop="name" content="Harbor common 文件夹分析">
+<meta itemprop="description" content="common 文件夹分析 ##api 定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&rdq">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:53:45&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:53:45&#43;08:00" />
+<meta itemprop="wordCount" content="6110">
+
+
+
+<meta itemprop="keywords" content="harbor,Golang,源码," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Harbor common 文件夹分析"/>
+<meta name="twitter:description" content="common 文件夹分析 ##api 定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&rdq"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Harbor common 文件夹分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 6110 words </span>
+          <span class="more-meta"> 13 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#common-文件夹分析">common 文件夹分析</a>
+<ul>
+<li><a href="#config-有待修改">config 有待修改</a></li>
+<li><a href="#dao">dao</a></li>
+<li><a href="#job">job</a></li>
+<li><a href="#models">models</a></li>
+<li><a href="#registryctl">registryctl</a></li>
+<li><a href="#secret">secret</a></li>
+<li><a href="#security">security</a></li>
+<li><a href="#utils">utils</a>
+<ul>
+<li><a href="#clair">clair</a></li>
+<li><a href="#registry">registry</a>
+<ul>
+<li><a href="#repository-go"><strong>repository.go</strong></a></li>
+<li><a href="#transport-go">transport.go</a></li>
+<li><a href="#manifest-go">Manifest.go</a></li>
+<li><a href="#auth-文件夹">auth 文件夹</a></li>
+<li><a href="#tokenauthorkizer-go">tokenauthorkizer.go</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="common-文件夹分析">common 文件夹分析</h1>
+
+<p>##api
+定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&rdquo;Link&rdquo; and &ldquo;X-Total-Count&rdquo; header，获取请求中的分页参数。</p>
+
+<h2 id="config-有待修改">config 有待修改</h2>
+
+<p>作为<code>common</code>文文件夹中配置组件，相当于中间件的作用。在 core 中的<code>config.go</code>中调用来自<code>common/config</code>的<code>NewManager</code>函数来创建配置文件管理器。在 <code>core</code>中所需要的配置文件的获取都通过这个管理器向<code>adminserver</code>发起请求获取相应的配置文件信息。</p>
+
+<h2 id="dao">dao</h2>
+
+<p>在跟踪前端的流程时在深入了解</p>
+
+<p>##http</p>
+
+<p>整个项目中通用的 Client，在多个组件中使用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">type Client struct {
+	modifiers []modifier.Modifier
+	client    *http.Client
+}</pre></td></tr></table>
+</div>
+</div>
+<p>相对于普通的 http.client 来说，增加修改功能主要用来给发送的请求进行授权。整个 harbor 中实现了以下 5 种授权器：
+- SecretAuthorizer：使用指定的 secret 给请求加密，通过调用<code>secret.AddToRequest(req, s.secret)</code>给请求头增加一个<code>Authorization</code>字段，内容为<code>Harbor-Secret secret</code>。
+- UserAgentModifier：给请求头增加 &ldquo;User-Agent&rdquo;，实际的执行语句为<code>req.Header.Set(http.CanonicalHeaderKey(&quot;User-Agent&quot;), u.UserAgent)</code>
+- basicAuthCredential：给请求头中增加用户密码信息。<code>r.Header.Set(&quot;Authorization&quot;, &quot;Basic &quot;+basicAuth(username, password))</code>
+- notaryAuthorizer：给请求头增加 token 信息，实际执行语句为<code>req.Header.Add(http.CanonicalHeaderKey(&quot;Authorization&quot;),fmt.Sprintf(&quot;Bearer %s&quot;, n.token))</code>
+- tokenAuthorizer： 给请求增加 token 信息，实际的执行语句为<code>req.Header.Add(http.CanonicalHeaderKey(&quot;Authorization&quot;), fmt.Sprintf(&quot;Bearer %s&quot;, token.Token))
+</code></p>
+
+<p>如果创建的客户端设置了授权器，那么在发送请求之前会根据 client 中存储的授权器对<code>request</code>进行修改授权，将授权后的请求发送出去。其中的<code>GET,PUT,DELETE,POST</code>请求的发送都经过了授权器的修改。</p>
+
+<h2 id="job">job</h2>
+
+<p>这个文件夹的核心是<code>client.go</code>文件，其中定义了操作<code>jobservice</code>clinet 的接口实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Client wraps interface to access jobservice.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Client</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">SubmitJob</span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">JobData</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">GetJobLog</span><span class="p">(</span><span class="nx">uuid</span> <span class="kt">string</span><span class="p">)</span> <span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">PostAction</span><span class="p">(</span><span class="nx">uuid</span><span class="p">,</span> <span class="nx">action</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="c1">// TODO Redirect joblog when we see there&#39;s memory issue.
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>用来进行访问<code>jobservice</code>的客户端在<code>common.client</code>的基础上增加了<code>jobservice</code>的 <code>url</code>信息，用来访问指定的<code>jobservice</code>。</p>
+
+<p>接口中定义的三个方法功能如下：
+- SubmitJob： 调用<code>jobservice</code>的 API ：<code>/api/v1/jobs</code> 去提交一个 job，返回 job 的 UUID。
+- GetJobLog：调用<code>jobservice</code>的 API ：<code>&quot;/api/v1/jobs/&quot; + uuid + &quot;/log&quot;</code> 获取指定 job 的日志。
+- PostAction：调用<code>jobservice</code>的 API ：<code>&quot;/api/v1/jobs/&quot; + uuid</code> 运行指定的 job。</p>
+
+<p><strong>job/models</strong>中定义了与 job 相关的数据结构。</p>
+
+<h2 id="models">models</h2>
+
+<p>基本上包含了 harbor 中所要使用到的数据结构，比较重要的点在于在<code>base.go</code>文件中在 orm 中注册了这些数据结构，具体实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func init() {
+	orm.RegisterModel(new(RepTarget),
+		new(RepPolicy),
+		new(RepJob),
+		new(User),
+		new(Project),
+		new(Role),
+		new(AccessLog),
+		new(ScanJob),
+		new(RepoRecord),
+		new(ImgScanOverview),
+		new(ClairVulnTimestamp),
+		new(WatchItem),
+		new(ProjectMetadata),
+		new(ConfigEntry),
+		new(Label),
+		new(ResourceLabel),
+		new(UserGroup),
+		new(AdminJob),
+		new(JobLog))
+}</pre></td></tr></table>
+</div>
+</div>
+<h2 id="registryctl">registryctl</h2>
+
+<p>这里只有一个<code>client.go</code>文件，被<code>jobservice</code>中的垃圾回收器调用创建一个registry 控制器。用来控制垃圾回收任务</p>
+
+<h2 id="secret">secret</h2>
+
+<p>此文件夹中的<code>request.go</code>中定义了从请求中从<code>Authorization</code>字段获取<code>Harbor-Secret</code>的信息的方法，以及为<code>secretAuthenticator</code>的请求增加验证信息的方法。</p>
+
+<h2 id="security">security</h2>
+
+<p>定义了与验证和授权有关的操作的接口</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Context abstracts the operations related with authN and authZ
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Context</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// IsAuthenticated returns whether the context has been authenticated or not
+</span><span class="c1"></span>	<span class="nf">IsAuthenticated</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="c1">// GetUsername returns the username of user related to the context
+</span><span class="c1"></span>	<span class="nf">GetUsername</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="c1">// IsSysAdmin returns whether the user is system admin
+</span><span class="c1"></span>	<span class="nf">IsSysAdmin</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="c1">// IsSolutionUser returns whether the user is solution user
+</span><span class="c1"></span>	<span class="nf">IsSolutionUser</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="c1">// HasReadPerm returns whether the user has read permission to the project
+</span><span class="c1"></span>	<span class="nf">HasReadPerm</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="c1">// HasWritePerm returns whether the user has write permission to the project
+</span><span class="c1"></span>	<span class="nf">HasWritePerm</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="c1">// HasAllPerm returns whether the user has all permissions to the project
+</span><span class="c1"></span>	<span class="nf">HasAllPerm</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="c1">// Get current user&#39;s all project
+</span><span class="c1"></span>	<span class="nf">GetMyProjects</span><span class="p">()</span> <span class="p">([]</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// Get user&#39;s role in provided project
+</span><span class="c1"></span>	<span class="nf">GetProjectRoles</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">[]</span><span class="kt">int</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里定义了三种不同的 context 分别为：admiral，local，secret</p>
+
+<h2 id="utils">utils</h2>
+
+<p>这个一个工具包</p>
+
+<h3 id="clair">clair</h3>
+
+<p>定义了 clair 的客户端结构，用来和 clair 服务器进行通信完成镜像扫描工作，其结构定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Client</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">endpoint</span> <span class="kt">string</span>
+	<span class="c1">// need to customize the logger to write output to job log.
+</span><span class="c1"></span>	<span class="nx">logger</span> <span class="o">*</span><span class="nx">log</span><span class="p">.</span><span class="nx">Logger</span>
+	<span class="nx">client</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>其他组件通过调用这里面的方法，来对 clair 进行操作，完成镜像扫描的工作。对 clair 有以下五中操作:
+- ScanLayer：将 layer 的信息发送到clair 的<code>c.endpoint+&quot;/v1/layers&quot;</code>路由，触发扫描任务
+- GetResult：获取 layer 详细的vulnerability信息，<code>c.endpoint+&quot;/v1/notifications/&quot;+id+&quot;?limit=2&quot;</code>
+- GetNotification：获取 notification 的详细信息，<code>c.endpoint+&quot;/v1/layers/&quot;+layerName+&quot;?features&amp;vulnerabilities&quot;</code>
+- DeleteNotification：删除 clair 中的notification ，<code>c.endpoint+&quot;/v1/notifications/&quot;+id</code>
+- ListNamespaces：删除 clair 中的namespaces，<code>c.endpoint+&quot;/v1/namespaces&quot;</code></p>
+
+<p>提供了一些工具函数用来解析 clair 中的数据，具体有以下的函数：
+- ParseClairSev：为 harbor 解析 clair 扫描出漏洞的安全级别
+- UpdateScanOverview：显示漏洞扫描完成后显示的概述</p>
+
+<p>虽然找到了 clair 数据库中的表，但是对于后端中数据结构的设计和数据库中表的设计之间联系还没有很明白。<strong>在modles</strong>中定义的数据结构，以<code>ClairVulnTimestamp</code>结构体为例，只有有 orm 表示的字段才会作为数据库表中的属性。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// ClairVulnTimestamp represents a record in DB that tracks the timestamp of vulnerability in Clair.
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">ClairVulnTimestamp</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">ID</span>            <span class="kt">int64</span>     <span class="s">`orm:&#34;pk;auto;column(id)&#34; json:&#34;-&#34;`</span>
+	<span class="nx">Namespace</span>     <span class="kt">string</span>    <span class="s">`orm:&#34;column(namespace)&#34; json:&#34;namespace&#34;`</span>
+	<span class="nx">LastUpdate</span>    <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span> <span class="s">`orm:&#34;column(last_update)&#34; json:&#34;-&#34;`</span>
+	<span class="nx">LastUpdateUTC</span> <span class="kt">int64</span>     <span class="s">`orm:&#34;-&#34; json:&#34;last_update&#34;`</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>###email
+邮箱功能</p>
+
+<h3 id="registry">registry</h3>
+
+<p>在深入介绍这个模块之前，需要介绍几个概念。</p>
+
+<p>第一个是<code>Transport</code>，对于http客户端，可以使用不同的实现了 RoundTripper 接口的Transport实现来配置它的行为。RoundTripper 有点像 http.Client 的中间件，<strong>使用golang net/http库发送http请求，最后都是调用 transport的 RoundTrip方法</strong>，详细参考 go 目录。</p>
+
+<p>####registry.go
+在<code>registry.go</code>中主要定义了registry client 以及对 registry 的一些操作。测试 registry 是否可用的 ping 操作，获取 registry 大致信息大<code>catelog</code>操作</p>
+
+<h4 id="repository-go"><strong>repository.go</strong></h4>
+
+<p>主要用来构建操作 registry 所需要的各种 API 请求，构建完成之后直接发送给 registry 组件，对镜像进行操作</p>
+
+<p>定义了镜像存储库的信息，其结构体如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Repository</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">Name</span>     <span class="kt">string</span>
+	<span class="nx">Endpoint</span> <span class="o">*</span><span class="nx">url</span><span class="p">.</span><span class="nx">URL</span>
+	<span class="nx">client</span>   <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这些构建的请求都是发送给私有的 registry 的，在<code>repository</code>中定义了如下的方法：
+- ListTag：获取镜像仓库中的镜像的标签,构建请求的格式为<code>%s/v2/%s/tags/list&quot;, endpoint, repoName</code>
+- ManifestExist:检查 repository 中是否有指定镜像的manifest，构建的请求为<code>HEAD /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
+- PullManifest: 获取镜像的 manifest ，pull 一个镜像分为二个过程，第一步就是找镜像的 manifest，构建的请求为<code>GET /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
+- PushManifest：上传通过name和reference标识的manifest，其中reference为tag或digest，构建的请求为<code>PUT /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
+- DeleteManifest：删除由名称和引用标识的manifest，manifest只能通过摘要删除。构建的请求为<code>DELETE /v2/&lt;name&gt;/manifests/&lt;reference&gt;</code>
+- MountBlob：从另一个存储库中装载由装载参数标识的blob，具体的用法是在给镜像retag的时候使用到，如果原镜像和目标进行不在同一个repository 中，就需要进行 Mount 操作。构建的请求为<code>POST /v2/&lt;name&gt;/blobs/uploads/?mount=&lt;digest&gt;&amp;from=&lt;repository name&gt;</code>
+- DeleteTag：调用<code>DeleteManifest</code>来删除
+- BlobExist：检查 repository 中是否存在指定的 Blob，构建的请求为<code>HEAD  /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code>
+- PullBlob：从 digest的registry中检索blob，构建的请求为<code>GET /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code>
+- initiateBlobUpload： 启动可恢复的blob上传，构建的请求为<code>POST /v2/&lt;name&gt;/blobs/uploads/</code>
+- monolithicBlobUpload：完成指定 uuid 的镜像上传，构建的请求为<code>PUT /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;?digest=&lt;digest&gt;</code>
+- PushBlob：先调用<code>initiateBlobUpload</code>创建目录，然后调用<code>monolithicBlobUpload</code>上传指定uuid的<code>blob</code>。
+- DeleteBlob：删除指定 repository和digest标识的blob， 构建的请求为<code>DELETE /v2/&lt;name&gt;/blobs/&lt;digest&gt;</code></p>
+
+<p>关于上述请求的详解请参考：HTTP API V2 接口详细解析</p>
+
+<h4 id="transport-go">transport.go</h4>
+
+<p>registry 在进行通信的时候需要定义<code>transport</code>来传输数据，同时还需要一个<code>Modifier</code>来对请求进行修改授权。具体结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">type Transport struct {
+	transport http.RoundTripper
+	modifiers []modifier.Modifier
+}</pre></td></tr></table>
+</div>
+</div>
+<p>此出实现接口 <code>RoundTripper</code> 的<code>RoundTrip</code>方法，用来获取与通道绑定的修改器，来对请求进行修改授权。然后将修改完成之后的 http 请求发送出去</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">Transport</span><span class="p">)</span> <span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">req</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Response</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">modifier</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">t</span><span class="p">.</span><span class="nx">modifiers</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">modifier</span><span class="p">.</span><span class="nf">Modify</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">transport</span><span class="p">.</span><span class="nf">RoundTrip</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Debugf</span><span class="p">(</span><span class="s">&#34;%d | %s %s&#34;</span><span class="p">,</span> <span class="nx">resp</span><span class="p">.</span><span class="nx">StatusCode</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">Method</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+
+	<span class="k">return</span> <span class="nx">resp</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="manifest-go">Manifest.go</h4>
+
+<p>定义了将<code>[]byte</code>类型的数据转换成<code>distribution.Manifest</code>格式，下面是测试用例中的<code>[]byte</code>类型的数据，经过转换后，registry 可以识别其中的内容。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">b := []byte(`{  
+   &#34;schemaVersion&#34;:2,
+   &#34;mediaType&#34;:&#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+   &#34;config&#34;:{  
+      &#34;mediaType&#34;:&#34;application/vnd.docker.container.image.v1+json&#34;,
+      &#34;size&#34;:1473,
+      &#34;digest&#34;:&#34;sha256:c54a2cc56cbb2f04003c1cd4507e118af7c0d340fe7e2720f70976c4b75237dc&#34;
+   },
+   &#34;layers&#34;:[  
+      {  
+         &#34;mediaType&#34;:&#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+         &#34;size&#34;:974,
+         &#34;digest&#34;:&#34;sha256:c04b14da8d1441880ed3fe6106fb2cc6fa1c9661846ac0266b8a5ec8edf37b7c&#34;
+      }
+   ]
+}`)</pre></td></tr></table>
+</div>
+</div>
+<h4 id="auth-文件夹">auth 文件夹</h4>
+
+<p>在和 registry 通信的过程中，请求中必须要获得授权信息。授权信息的处理就是在这里完成的。</p>
+
+<p>在<code>Credential.go</code>文件中定义了<code>basicAuthCredential</code>结构体，用来存储请求中的账号和密码。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">// Implements interface Credential
+type basicAuthCredential struct {
+	username string
+	password string
+}</pre></td></tr></table>
+</div>
+</div>
+<p>同时还定义了<code>AddAuthorization</code>和<code>Modify</code>方法，前者用来增加授权信息。后者是实现了<code>github.com/goharbor/harbor/src/common/http/modifier.Modifier</code>的接口用来修改请求，调用<code>AddAuthorization</code>方法给请求带上账号密码信息。</p>
+
+<p>在<code>path.go</code>中定义了解析请求路由路径中的 repository 的方法。</p>
+
+<p><strong>tokenauthorkizer.go</strong>用来生成在访问 registry 过程中，需要使用到的 token。这里面涉及到的内容比较多开一个信息同级目录进行讲解。</p>
+
+<h4 id="tokenauthorkizer-go">tokenauthorkizer.go</h4>
+
+<p>此文件中定义了1 个接口 3 个结构体。接口名为<code>tokenGenerator</code>是 token 服务的生成器。定义的三个结构体分别为：<code>UserAgentModifier</code>，<code>tokenAuthorizer</code> ，<code>rawTokenGenerator</code>，<code>standardTokenGenerator</code> 后面二个结构体都实现了<code>tokenGenerator</code>接口的方法用来生成不同格式的token。</p>
+
+<p><code>tokenGenerator</code>接口的定义如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">tokenGenerator</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// scopes 定义了此资源运行的操作
+</span><span class="c1"></span>	<span class="nf">generate</span><span class="p">(</span><span class="nx">scopes</span> <span class="p">[]</span><span class="o">*</span><span class="nx">token</span><span class="p">.</span><span class="nx">ResourceActions</span><span class="p">,</span> <span class="nx">endpoint</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Token</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>实现了上述接口的<code>standardTokenGenerator</code>的<code>generate</code>方法从 token 服务器获取<code>token</code>。获取 token&rsquo;的逻辑如下
+1. 通过<code>endpoint</code>的参数调用<code>ping()</code>方法获得realm（领域也就是请求发送的地址） 和service，这二个参数是在认证服务器返回的<code>Challenge</code>参数中提取出来的。
+2. 调用<code>getToken</code>方法，先构造好需要client 的发送请求。在请求中的查询参数有<code>service</code>和<code>scope</code>。如果<code>credential</code>参数不为空，需要调用<code>Modify(req)</code>给请求加上授权信息。完成上述工作之后就可以发送请求了。
+如果请求发送成功，就可以获得<code>token</code>信息</p>
+
+<p>实现了上述接口的<code>rawTokenGenerator</code>的<code>generate</code>方法直接调用core 文件夹下的<code>token_util.MakeToken</code>方法直接生成 token。</p>
+
+<p>结构体<code>tokenAuthorizer</code>是 token 授权器的重点，其实现了<code>registry.Modifier</code>接口。主要负责解析出请求中<code>scopes</code>参数也就是需要执行的操作（pull/push），同时生成授权用的 token通过修改请求将授权用的 token 加入其中。详细定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">tokenAuthorizer</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">registryURL</span>  <span class="o">*</span><span class="nx">url</span><span class="p">.</span><span class="nx">URL</span> <span class="c1">// used to filter request
+</span><span class="c1"></span>	<span class="nx">generator</span>    <span class="nx">tokenGenerator</span>
+	<span class="nx">client</span>       <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span>
+	<span class="nx">cachedTokens</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Token</span>
+	<span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里定义的请求修改器只修改发向<code>registry</code>的请求,下面详细介绍一下请求修改器的实现。
+1. 调用<code>filterReq</code>方法，用来对请求进行过滤，只有发送到registry 的请求才可以通过
+2. 调用<code>parseScopes</code>方法从请求的<code>method, path and query string</code>中提取出<code>scopoes</code>，也就是对资源的操作。
+3. 如果<code>login</code> 操作或者<code>scopes</code>中只有一个参数时，从本地的<code>cached</code>中获取<code>token</code>
+4. 如果经过 3 之后<code>token</code>还是为空，通过上述定义的二个<code>token</code>生成器来获取<code>token</code>信息，并且将这个<code>token</code>的信息作为 value存储在本地缓冲中，key 为<code>scopes</code>
+5. 构建发送请求<code>req.Header.Add(http.CanonicalHeaderKey(&quot;Authorization&quot;), fmt.Sprintf(&quot;Bearer %s&quot;, token.Token))</code>，为其增加<code>token</code>授权信息。</p>
+
+<p>在讲解完上述的<code>token</code>生成器和请求修改器，下面介绍如何将这二个联系到一起。此文件中为二个<code>token</code>生成器分别定义了一个实例化的方法。<code>NewStandardTokenAuthorizer</code>和<code>NewRawTokenAuthorizer</code>。</p>
+
+<p><strong>NewStandardTokenAuthorizer</strong>
+此方法会返回一个标准的 <code>token</code> 生成器，<code>Authorizer</code>会从 <code>token</code> 服务器上获取<code>token</code>并将其添加到请求中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">NewStandardTokenAuthorizer</span><span class="p">(</span><span class="nx">client</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">,</span> <span class="nx">credential</span> <span class="nx">Credential</span><span class="p">,</span>
+	<span class="nx">customizedTokenService</span> <span class="o">...</span><span class="kt">string</span><span class="p">)</span> <span class="nx">modifier</span><span class="p">.</span><span class="nx">Modifier</span> <span class="p">{</span>
+	<span class="nx">generator</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">standardTokenGenerator</span><span class="p">{</span>
+		<span class="nx">credential</span><span class="p">:</span> <span class="nx">credential</span><span class="p">,</span>
+		<span class="nx">client</span><span class="p">:</span>     <span class="nx">client</span><span class="p">,</span>
+	<span class="p">}</span>
+
+	<span class="c1">// when the registry client is used inside Harbor, the token request
+</span><span class="c1"></span>	<span class="c1">// can be posted to token service directly rather than going through nginx.
+</span><span class="c1"></span>	<span class="c1">// If realm is set as the internal url of token service, this can resolve
+</span><span class="c1"></span>	<span class="c1">// two problems:
+</span><span class="c1"></span>	<span class="c1">// 1. performance issue
+</span><span class="c1"></span>	<span class="c1">// 2. the realm field returned by registry is an IP which can not reachable
+</span><span class="c1"></span>	<span class="c1">// inside Harbor
+</span><span class="c1"></span>	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">customizedTokenService</span><span class="p">)</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="nx">generator</span><span class="p">.</span><span class="nx">realm</span> <span class="p">=</span> <span class="nx">customizedTokenService</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">tokenAuthorizer</span><span class="p">{</span>
+		<span class="nx">cachedTokens</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Token</span><span class="p">),</span>
+		<span class="nx">generator</span><span class="p">:</span>    <span class="nx">generator</span><span class="p">,</span>
+		<span class="nx">client</span><span class="p">:</span>       <span class="nx">client</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>NewRawTokenAuthorizer</strong>
+直接在本地创建 <code>token</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">NewRawTokenAuthorizer</span><span class="p">(</span><span class="nx">username</span><span class="p">,</span> <span class="nx">service</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">modifier</span><span class="p">.</span><span class="nx">Modifier</span> <span class="p">{</span>
+	<span class="nx">generator</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">rawTokenGenerator</span><span class="p">{</span>
+		<span class="nx">service</span><span class="p">:</span>  <span class="nx">service</span><span class="p">,</span>
+		<span class="nx">username</span><span class="p">:</span> <span class="nx">username</span><span class="p">,</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">tokenAuthorizer</span><span class="p">{</span>
+		<span class="nx">cachedTokens</span><span class="p">:</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Token</span><span class="p">),</span>
+		<span class="nx">generator</span><span class="p">:</span>    <span class="nx">generator</span><span class="p">,</span>
+	<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>通过这二个对外暴露的方法，完美的实现了对发往<code>registry</code>请求的授权封装</p>
+
+<blockquote>
+<p>解释一下<code>Challenge-Response协议</code>:基于挑战/应答（Challenge/Response）方式的身份认证系统就是每次认证时认证服务器端都给客户端发送一个不同的&rdquo;挑战&rdquo;字串，客户端程序收到这个&rdquo;挑战&rdquo;字串后，做出相应的&rdquo;应答&rdquo;,以此机制而研制的系统.</p>
+</blockquote>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/harbor/">harbor</a>
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/harbor_core/">
+            <span class="next-text nav-default">Harbor core 文件夹分析</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

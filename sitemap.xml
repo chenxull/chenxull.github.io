@@ -3,8 +3,52 @@
   
   <url>
     <loc>https://chenxull.github.io/</loc>
-    <lastmod>2019-05-15T13:48:51+08:00</lastmod>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/golang/</loc>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/harbor_common/</loc>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/</loc>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/</loc>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/harbor/</loc>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/%E6%BA%90%E7%A0%81/</loc>
+    <lastmod>2019-05-15T13:53:45+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/post/harbor_core/</loc>
+    <lastmod>2019-05-15T13:53:31+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
   
   <url>
@@ -12,24 +56,6 @@
     <lastmod>2019-05-15T13:48:51+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/golang/</loc>
-    <lastmod>2019-05-15T13:48:51+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/post/</loc>
-    <lastmod>2019-05-15T13:48:51+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/</loc>
-    <lastmod>2019-05-15T13:48:51+08:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>

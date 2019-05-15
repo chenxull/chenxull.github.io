@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Harbor core 文件夹分析 - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="core 文件夹分析 此文件夹是 harbor 的核心组件。在根目录下有main.go和router.go二个文件。前者用来初始化整个后端项目，后者是对请求的路由处" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/harbor_core/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Harbor core 文件夹分析" />
+<meta property="og:description" content="core 文件夹分析 此文件夹是 harbor 的核心组件。在根目录下有main.go和router.go二个文件。前者用来初始化整个后端项目，后者是对请求的路由处" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/harbor_core/" />
+<meta property="article:published_time" content="2019-05-15T13:53:31&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:53:31&#43;08:00"/>
+
+<meta itemprop="name" content="Harbor core 文件夹分析">
+<meta itemprop="description" content="core 文件夹分析 此文件夹是 harbor 的核心组件。在根目录下有main.go和router.go二个文件。前者用来初始化整个后端项目，后者是对请求的路由处">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:53:31&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:53:31&#43;08:00" />
+<meta itemprop="wordCount" content="7928">
+
+
+
+<meta itemprop="keywords" content="harbor,Golang,源码," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Harbor core 文件夹分析"/>
+<meta name="twitter:description" content="core 文件夹分析 此文件夹是 harbor 的核心组件。在根目录下有main.go和router.go二个文件。前者用来初始化整个后端项目，后者是对请求的路由处"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Harbor core 文件夹分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 7928 words </span>
+          <span class="more-meta"> 16 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#core-文件夹分析">core 文件夹分析</a>
+<ul>
+<li><a href="#router-go">router.go</a></li>
+<li><a href="#api">api</a>
+<ul>
+<li><a href="#api-users">/api/users</a>
+<ul>
+<li><a href="#post">post</a></li>
+</ul></li>
+<li><a href="#api-users-user-id-password">/api/users/:user_id/password</a></li>
+</ul></li>
+<li><a href="#controllers">controllers</a></li>
+<li><a href="#proxy">proxy</a>
+<ul>
+<li><a href="#interceptors-go">interceptors.go</a></li>
+</ul></li>
+<li><a href="#auth">auth</a></li>
+<li><a href="#promgr">promgr</a></li>
+<li><a href="#config">config</a></li>
+<li><a href="#filter">filter</a>
+<ul>
+<li><a href="#securityfilter">SecurityFilter</a></li>
+<li><a href="#readonlyfilter">ReadonlyFilter</a></li>
+<li><a href="#getsecuritycontext">GetSecurityContext</a></li>
+<li><a href="#getprojectmanager">GetProjectManager</a></li>
+</ul></li>
+<li><a href="#日志的实现">日志的实现</a></li>
+<li><a href="#context-设计">context 设计</a>
+<ul>
+<li><a href="#isauthenticated">IsAuthenticated</a></li>
+<li><a href="#getprojectroles">GetProjectRoles</a></li>
+<li><a href="#getmyprojects">GetMyProjects</a></li>
+<li><a href="#getrolesbygroup">GetRolesByGroup</a></li>
+</ul></li>
+<li><a href="#token-服务">token 服务</a>
+<ul>
+<li><a href="#生成-token">生成 token</a></li>
+</ul></li>
+<li><a href="#通知服务">通知服务</a>
+<ul>
+<li><a href="#漏洞扫描">漏洞扫描</a></li>
+</ul></li>
+<li><a href="#service-notifications-路由">/service/notifications/ 路由</a>
+<ul>
+<li><a href="#adminjob">adminjob</a></li>
+<li><a href="#clair">clair</a></li>
+<li><a href="#jobs">jobs</a></li>
+<li><a href="#registry">registry</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="core-文件夹分析">core 文件夹分析</h1>
+
+<p>此文件夹是 harbor 的核心组件。在根目录下有<code>main.go</code>和<code>router.go</code>二个文件。前者用来初始化整个后端项目，后者是对请求的路由处理。在分析一个操作的执行流程时，可以从路由文件入手，一步一步分析。</p>
+
+<p>harbor 中的 controller设计，在<code>common/api</code>文件夹中实现了一个<code>BaseAPI</code>具体实现如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">BaseAPI</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">beego</span><span class="p">.</span><span class="nx">Controller</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这个<code>BaseAPI</code>实现了<code>ControllerInterface</code>接口中的部分方法。在给 harbor 添加新的功能时，此功能对外暴露出来的 <code>API</code>首先需要隐式的继承<code>BaseController</code>结构体，在<code>BaseController</code>结构体中继承了<code>BaseAPI</code>。</p>
+
+<p>以<code>projectAPI</code>为例，它的具体实现如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ProjectAPI</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">BaseController</span>
+	<span class="nx">project</span> <span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述 API 中继承的<code>BaseController</code>实现如下，除了继承了 BaseAPI 之外，还实现了确保安全的上下文，以及项目管理器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// BaseController ...
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">BaseController</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">api</span><span class="p">.</span><span class="nx">BaseAPI</span>
+	<span class="c1">// SecurityCtx is the security context used to authN &amp;authZ
+</span><span class="c1"></span>	<span class="nx">SecurityCtx</span> <span class="nx">security</span><span class="p">.</span><span class="nx">Context</span>
+	<span class="c1">// ProjectMgr is the project manager which abstracts the operations
+</span><span class="c1"></span>	<span class="c1">// related to projects
+</span><span class="c1"></span>	<span class="nx">ProjectMgr</span> <span class="nx">promgr</span><span class="p">.</span><span class="nx">ProjectManager</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>通过上述继承实现，用户在添加新的功能时，需要按照这样的实现逻辑添加新的控制器。</p>
+
+<h2 id="router-go">router.go</h2>
+
+<p>注册 harbor 支持的所有的路由，每个路由分为三个部分，具体实现如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">beego.Router(&#34;/c/login&#34;, &amp;controllers.CommonController{}, &#34;post:Login&#34;)</pre></td></tr></table>
+</div>
+</div>
+<p>第一个参数是浏览器访问的地址，第二个参数是MVC 中的 C。Controller是用来处理不同URL的控制器，不同的路径有不同的控制器。在 harbor 中大致有一下二种控制器：
+- controllers.CommonController
+- api 中的不同操作的控制器（细分种类很多）</p>
+
+<p>每个控制器都实现了一下的接口</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ControllerInterface</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Init</span><span class="p">(</span><span class="nx">ct</span> <span class="o">*</span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">controllerName</span><span class="p">,</span> <span class="nx">actionName</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">app</span> <span class="kd">interface</span><span class="p">{})</span>
+	<span class="nf">Prepare</span><span class="p">()</span>
+	<span class="nf">Get</span><span class="p">()</span>
+	<span class="nf">Post</span><span class="p">()</span>
+	<span class="nf">Delete</span><span class="p">()</span>
+	<span class="nf">Put</span><span class="p">()</span>
+	<span class="nf">Head</span><span class="p">()</span>
+	<span class="nf">Patch</span><span class="p">()</span>
+	<span class="nf">Options</span><span class="p">()</span>
+	<span class="nf">Finish</span><span class="p">()</span>
+	<span class="nf">Render</span><span class="p">()</span> <span class="kt">error</span>
+	<span class="nf">XSRFToken</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nf">CheckXSRFCookie</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="nf">HandlerFunc</span><span class="p">(</span><span class="nx">fn</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">bool</span>
+	<span class="nf">URLMapping</span><span class="p">()</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>实现了上述接口定义的函数的结构体，通过路由根据url执行相应的controller的原则，会依次执行下列函数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Init()      初始化
+Prepare()   执行之前的初始化，每个继承的子类可以来实现该函数
+method()    根据不同的method执行不同的函数：GET、POST、PUT、HEAD等，子类来实现这些函数，如果没实现，那么默认都是403
+Render()    可选，根据全局变量AutoRender来判断是否执行
+Finish()    执行完之后执行的操作，每个继承的子类可以来实现该函数</pre></td></tr></table>
+</div>
+</div>
+<p>每个控制器的 Prepare 函数中都实现了认证功能，具体实现有差别，认证这一逻辑会具体介绍。</p>
+
+<h2 id="api">api</h2>
+
+<p>大部分功能的路由功能都在这里实现。</p>
+
+<h3 id="api-users">/api/users</h3>
+
+<h4 id="post">post</h4>
+
+<p>添加新的用户到数据库中，用户的数据结构定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">User</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">UserID</span>   <span class="kt">int</span>    <span class="s">`orm:&#34;pk;auto;column(user_id)&#34; json:&#34;user_id&#34;`</span>
+	<span class="nx">Username</span> <span class="kt">string</span> <span class="s">`orm:&#34;column(username)&#34; json:&#34;username&#34;`</span>
+	<span class="nx">Email</span>    <span class="kt">string</span> <span class="s">`orm:&#34;column(email)&#34; json:&#34;email&#34;`</span>
+	<span class="nx">Password</span> <span class="kt">string</span> <span class="s">`orm:&#34;column(password)&#34; json:&#34;password&#34;`</span>
+	<span class="nx">Realname</span> <span class="kt">string</span> <span class="s">`orm:&#34;column(realname)&#34; json:&#34;realname&#34;`</span>
+	<span class="nx">Comment</span>  <span class="kt">string</span> <span class="s">`orm:&#34;column(comment)&#34; json:&#34;comment&#34;`</span>
+	<span class="nx">Deleted</span>  <span class="kt">bool</span>   <span class="s">`orm:&#34;column(deleted)&#34; json:&#34;deleted&#34;`</span>
+	<span class="nx">Rolename</span> <span class="kt">string</span> <span class="s">`orm:&#34;-&#34; json:&#34;role_name&#34;`</span>
+	<span class="c1">// if this field is named as &#34;RoleID&#34;, beego orm can not map role_id
+</span><span class="c1"></span>	<span class="c1">// to it.
+</span><span class="c1"></span>	<span class="nx">Role</span> <span class="kt">int</span> <span class="s">`orm:&#34;-&#34; json:&#34;role_id&#34;`</span>
+	<span class="c1">//	RoleList     []Role `json:&#34;role_list&#34;`
+</span><span class="c1"></span>	<span class="nx">HasAdminRole</span> <span class="kt">bool</span>         <span class="s">`orm:&#34;column(sysadmin_flag)&#34; json:&#34;has_admin_role&#34;`</span>
+	<span class="nx">ResetUUID</span>    <span class="kt">string</span>       <span class="s">`orm:&#34;column(reset_uuid)&#34; json:&#34;reset_uuid&#34;`</span>
+	<span class="nx">Salt</span>         <span class="kt">string</span>       <span class="s">`orm:&#34;column(salt)&#34; json:&#34;-&#34;`</span>
+	<span class="nx">CreationTime</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>    <span class="s">`orm:&#34;column(creation_time);auto_now_add&#34; json:&#34;creation_time&#34;`</span>
+	<span class="nx">UpdateTime</span>   <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>    <span class="s">`orm:&#34;column(update_time);auto_now&#34; json:&#34;update_time&#34;`</span>
+	<span class="nx">GroupList</span>    <span class="p">[]</span><span class="o">*</span><span class="nx">UserGroup</span> <span class="s">`orm:&#34;-&#34; json:&#34;-&#34;`</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><code>post</code>方法会对发送过来的请求进行一系列验证，只有当这些验证都通过时。前端界面上的注册按钮才生校，点击注册按钮后。表单中的信息会被发送到后端服务器上来，服务器在验证一遍用户的信息是否符合规范，当通过所有检查后，调用<code>dao.registry(user)</code>进行注册，返回用户 ID。</p>
+
+<h3 id="api-users-user-id-password">/api/users/:user_id/password</h3>
+
+<p>更改密码服务
+<strong>Put()</strong>方法，先检查验证模式是否允许更改密码。</p>
+
+<h2 id="controllers">controllers</h2>
+
+<p>此文件夹实现了用户登录，登出，检查用户或邮箱是否存储，重置邮箱，重置密码等功能。</p>
+
+<h2 id="proxy">proxy</h2>
+
+<blockquote>
+<p>拦截器：拦截器是指对浏览器到服务器的请求数据或者服务器到浏览器的返回数据做一些更改，或将请求的数据做一些增强。</p>
+</blockquote>
+
+<p>定义了对于发送过来请求的处理链路,以及拦截器的实现。通过<code>ServeHTTP</code>将实现的功能暴露出去。</p>
+
+<p>这个拦截器会拦截<code>pull manifest</code>请求，对这个请求进行改增。将 image 和tag/sha256 digest 作为返回值的第二和第三个参数。</p>
+
+<h3 id="interceptors-go">interceptors.go</h3>
+
+<p><strong><code>urlHandler</code></strong>结构体的 <code>ServeHTTP</code>方法主要用来对原有的<code>request</code>进行处理，使其附带上镜像信息</p>
+
+<p><code>ServeHTTP</code>首先对请求进行正则处理，提取出<code>flag, repository, reference</code>信息。使用<code>repository</code>和<code>tokenUsername</code>信息调用<code>NewRepositoryClientForUI（）</code>函数创建一个 <code>repository client</code>仅用来访问内部的 <code>registry</code>，这个<code>client</code>增加了 <code>&quot;User-Agent&quot; header</code>到请求中，同时加上token 服务所需要的信息。</p>
+
+<p><strong><code>readonlyHandler</code></strong>结构体的 <code>ServeHTTP</code>方法主要用来对<code>request</code>进行限制，禁止请求的访问。</p>
+
+<p><strong><code>listReposHandler</code></strong>结构体的 <code>ServeHTTP</code>方法主要用来返回的请求上添加镜像仓库的信息。包含了仓库的内容及其长度信息，放在 Content-Length 字段中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">rw</span><span class="p">.</span><span class="nf">Header</span><span class="p">().</span><span class="nf">Set</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nf">CanonicalHeaderKey</span><span class="p">(</span><span class="s">&#34;Content-Length&#34;</span><span class="p">),</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Itoa</span><span class="p">(</span><span class="nx">clen</span><span class="p">))</span>
+<span class="nx">rw</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">respJSON</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong><code>contentTrustHandler</code></strong>结构体的 <code>ServeHTTP</code>方法只有在<code>Notary</code>服务开启时才生效</p>
+
+<p><strong><code>vulnerableHandler</code></strong>结构体的 <code>ServeHTTP</code>方法只有在<code>clair</code>服务开启后才能生效。</p>
+
+<p>最后二个等到需要实时再来仔细看。</p>
+
+<h2 id="auth">auth</h2>
+
+<p>实现了用户的登录认证，在 harbor 中用户登录认证的方式分为二种：
+- 数据库
+- LDAP 方式
+- uaa 认证</p>
+
+<p>认证器的接口如下，用户可以很方便的实现自己的认证方式只要实现了下面接口提供的方法即可。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">// AuthenticateHelper provides interface for user management in different auth modes.
+type AuthenticateHelper interface {
+
+	// Authenticate authenticate the user based on data in m.  Only when the error returned is an instance
+	// of ErrAuth, it will be considered a bad credentials, other errors will be treated as server side error.
+	Authenticate(m models.AuthModel) (*models.User, error)
+	// OnBoardUser will check if a user exists in user table, if not insert the user and
+	// put the id in the pointer of user model, if it does exist, fill in the user model based
+	// on the data record of the user
+	OnBoardUser(u *models.User) error
+	// Create a group in harbor DB, if altGroupName is not empty, take the altGroupName as groupName in harbor DB.
+	OnBoardGroup(g *models.UserGroup, altGroupName string) error
+	// Get user information from account repository
+	SearchUser(username string) (*models.User, error)
+	// Search a group based on specific authentication
+	SearchGroup(groupDN string) (*models.UserGroup, error)
+	// Update user information after authenticate, such as OnBoard or sync info etc
+	PostAuthenticate(u *models.User) error
+}</pre></td></tr></table>
+</div>
+</div>
+<p>在 harbor 中可以给每个项目增加新的成员，新的组进行细粒度管理。其中的权限认证就是通过上述的几种方法实现的。<strong>（猜测）</strong></p>
+
+<p><code>CommonController</code>控制器的<code>Login</code>方法就调用了<code>auth</code>中登录的实现。根据登录模式的不同选择不同的验证方式，传入的参数为用户名和密码。</p>
+
+<p>默认的验证方式为数据库验证，登录验证的逻辑如下：
+1. 检查认证方式
+2. 设置锁，避免短时间内有多次登录请求互相抢占
+3. 完成上述检查后，根据配置认证方式的不同调用对应的认证器</p>
+
+<p><strong>主要分析数据库认证</strong></p>
+
+<p>数据库认证实现的比较简单，直接调用<code>dao</code>层中的<code>LoginByDb</code>函数，以 orm 的方式直接构建 sql 语句查询是否有对应的用户在数据库中，查询成功后用户实例对象。数据库认证方式的<code>PostAuthenticate</code>方法没有执行任何操作。没有问题后，认证完成。使用此用户信息创建 session，用户登录成功。</p>
+
+<h2 id="promgr">promgr</h2>
+
+<p>这里实现了对 harbor 中项目的管理。抽象出来一个项目管理的常规操作并将其定义为接口类型，<code>ProjectManager</code>也实现了<code>PMSDriver</code>接口的方法。所以当用户在增加新的<code>ProjectManager</code>的时，只要实现了下面的方法也会实现<code>PMSDriver</code>接口。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">ProjectManager</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Get</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Create</span><span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">)</span> <span class="p">(</span><span class="kt">int64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Delete</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">error</span>
+	<span class="nf">Update</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{},</span> <span class="nx">project</span> <span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">)</span> <span class="kt">error</span>
+	<span class="nf">List</span><span class="p">(</span><span class="nx">query</span> <span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ProjectQueryParam</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">ProjectQueryResult</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">IsPublic</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="nf">Exists</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span><span class="kt">bool</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// get all public project
+</span><span class="c1"></span>	<span class="nf">GetPublic</span><span class="p">()</span> <span class="p">([]</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// if the project manager uses a metadata manager, return it, otherwise return nil
+</span><span class="c1"></span>	<span class="nf">GetMetadataManager</span><span class="p">()</span> <span class="nx">metamgr</span><span class="p">.</span><span class="nx">ProjectMetadataManager</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>PMSDriver的驱动共有 2 中分别为<code>admiral</code>和<code>local</code>,这二者的区别有待研究。</p>
+
+<p>ProjectManager中存储的数据如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json">  <span class="p">{</span>
+    <span class="nt">&#34;project_id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;owner_id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;library&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;creation_time&#34;</span><span class="p">:</span> <span class="s2">&#34;2019-02-15T12:58:31.485307Z&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;update_time&#34;</span><span class="p">:</span> <span class="s2">&#34;2019-02-15T12:58:31.485307Z&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;deleted&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&#34;owner_name&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;togglable&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;current_user_role_id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;repo_count&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;metadata&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;auto_scan&#34;</span><span class="p">:</span> <span class="s2">&#34;true&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;enable_content_trust&#34;</span><span class="p">:</span> <span class="s2">&#34;false&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;prevent_vul&#34;</span><span class="p">:</span> <span class="s2">&#34;false&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;public&#34;</span><span class="p">:</span> <span class="s2">&#34;true&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;severity&#34;</span><span class="p">:</span> <span class="s2">&#34;low&#34;</span>
+    <span class="p">}</span>
+  <span class="p">}</span><span class="err">,</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="config">config</h2>
+
+<p>在 <code>main.go</code>中调用了<code>config.Init()</code>函数，因为配置文件的处理是在<code>adminserver</code>组件中完成的，所以在 <code>config.go</code>中通过创建一个<code>adminserver</code>的client ，使用 http 通信的方式访问<code>adminserver</code>的 URL 来获取配置文件的信息。</p>
+
+<p>为了确保通信的安全，<code>adminserver</code>的 client 在创建时会使用<code>CORE_SECRET</code>参数进行加密。创建好的 client 会被赋值给一个<code>Manager</code>结构体，这是用来管理配置文件的，具体结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Manager manages configurations
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Manager</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">client</span> <span class="nx">client</span><span class="p">.</span><span class="nx">Client</span>
+	<span class="nx">Cache</span>  <span class="kt">bool</span>
+	<span class="nx">cache</span>  <span class="nx">cache</span><span class="p">.</span><span class="nx">Cache</span>
+	<span class="nx">key</span>    <span class="kt">string</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>配置文件是直接存储在内存上。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">	<span class="k">if</span> <span class="nx">enableCache</span> <span class="p">{</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">Cache</span> <span class="p">=</span> <span class="kc">true</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">cache</span> <span class="p">=</span> <span class="nx">cache</span><span class="p">.</span><span class="nf">NewMemoryCache</span><span class="p">()</span>
+		<span class="nx">m</span><span class="p">.</span><span class="nx">key</span> <span class="p">=</span> <span class="s">&#34;cfg&#34;</span>
+	<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在完成<code>Manager</code>的创建之后，会调用 client 的<code>GetCfgs</code>方法从<code>adminserver</code>请求配置信息，并将配置信息存储在内存中。<code>jobservice</code>与其他组件进行通信的密码。</p>
+
+<p>完成上述的操作后，初始化<code>ProjectManager</code>。当 harbor 开启<code>admiral</code>是需要对 http 服务使用 x509 进行加密生成<code>AdmiralClient</code>，在创建PSM驱动时需要将<code>AdmiralClient</code>作为参数传入进行，在后续的通信过程中使用。同时海域要传入 token 服务的阅读器，具体实现如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">driver = admiral.NewDriver(AdmiralClient, AdmiralEndpoint(), TokenReader)</pre></td></tr></table>
+</div>
+</div>
+<p>在没有开启<code>admiral</code>的模式下，直接使用本地的数据库创建 项目管理器（ProjectManager）的驱动。最后使用上述的驱动创建一个全局项目管理器单例，用来对 harbor 的项目进行管理。</p>
+
+<p>还有一些功能是 LDAP 的实现，这里不做介绍。</p>
+
+<h2 id="filter">filter</h2>
+
+<p>用来对一些请求进行过滤，只有符合要求的请求才被允许访问 harbor。这里的过滤主要分为三种分别为:
+- SecurityFilter
+- ReadonlyFilter：在GC 的过程汇总开启
+- MediaTypeFilter：只有这几种类型的请求才能访问<code>&quot;application/json&quot;, &quot;multipart/form-data&quot;, &quot;application/octet-stream&quot;</code></p>
+
+<p>前二种过滤器对所有的请求都进行过滤，最后一种只对<code>/api/*</code>类型的请求过滤。</p>
+
+<h3 id="securityfilter">SecurityFilter</h3>
+
+<p>遍历之前定义的四中修改器，对 req 对用每种修改器的<code>Modify（req）</code>方法。</p>
+
+<p><strong>secretReqCtxModifier</strong>对发送的请求增加了二种信息:
+- harbor_security_context:获取 req header中的<code>secret</code>，然后通过这个<code>secret</code>和secret store 创建NewSecurityContext
+- harbor_project_manager：</p>
+
+<p><strong>basicAuthReqCtxModifier</strong>
+获取请求中的用户名和密码，然后使用账户信息进行登录验证，如果请求中发来的用户信息和数据库中一致。就可以对请求进行修改，给请求增加用户和 pm 信息。具体如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">securCtx</span> <span class="o">:=</span> <span class="nx">local</span><span class="p">.</span><span class="nf">NewSecurityContext</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">pm</span><span class="p">)</span>
+	<span class="nf">setSecurCtxAndPM</span><span class="p">(</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">securCtx</span><span class="p">,</span> <span class="nx">pm</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>sessionReqCtxModifier</strong>
+对前端发送来的请求进行修改，通过<code>req</code>中的<code>session</code>信息得到用户的详细信息。然后将用户的信息和<code>GlobalProjectMgr</code>信息存储到<code>req</code>的 context 中，具体实现如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">	securCtx := local.NewSecurityContext(&amp;user, pm)
+
+	setSecurCtxAndPM(ctx.Request, securCtx, pm)</pre></td></tr></table>
+</div>
+</div>
+<p><strong>unauthorizedReqCtxModifier</strong>
+对于没有授权的请求，用户信息为 nil，在修改<code>req</code>时没有用户信息有<code>pm</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">	<span class="nx">securCtx</span> <span class="p">=</span> <span class="nx">local</span><span class="p">.</span><span class="nf">NewSecurityContext</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="nx">pm</span><span class="p">)</span>
+ 	<span class="nf">setSecurCtxAndPM</span><span class="p">(</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">Request</span><span class="p">,</span> <span class="nx">securCtx</span><span class="p">,</span> <span class="nx">pm</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="readonlyfilter">ReadonlyFilter</h3>
+
+<p>开启 readonly 过滤后，当请求中有删除操作或重新打 label 操作时，请求都会被禁止。</p>
+
+<h3 id="getsecuritycontext">GetSecurityContext</h3>
+
+<p>此函数在 <code>BaseController</code>的<code>Prepare</code>函数中被调用，用来获取请求中的<code>security context</code>并返回。在发送到后端的数据，都是通过<code>security context</code>来进行传递的，前端的数据通过上述过滤器被修改为<code>security context</code>。</p>
+
+<p>根据请求中的关键字<code>SecurCtxKey=harbor_security_context</code>来获取<code>security context</code>。</p>
+
+<h3 id="getprojectmanager">GetProjectManager</h3>
+
+<p>获取请求中的<code>project manager</code>。根据请求中的关键字<code>PmKey=harbor_project_manager</code>来获取。</p>
+
+<h2 id="日志的实现">日志的实现</h2>
+
+<ul class="task-list">
+<li><label><input type="checkbox" disabled class="task-list-item"> 如何实现让日志服务成为单独一个容器，记录来自不同的容器的日志信息</label></li>
+</ul>
+
+<p>主要需要考虑的就是在每个记录日志的地方，留意日志的输出是设置到哪里的。</p>
+
+<p>除了 jobservice文件夹，其他的组件使用的都是<code>src/common/utils/log</code>提供的日志服务，比较的轻量级。</p>
+
+<h2 id="context-设计">context 设计</h2>
+
+<p>在<code>common</code>包中定义了<code>context</code>接口，抽象出操作的通用方法。判断前端发来的请求中，用户的身份信息是否有相对应的权限，都是在这个接口中定义的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Context abstracts the operations related with authN and authZ
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">Context</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// IsAuthenticated returns whether the context has been authenticated or not
+</span><span class="c1"></span>	<span class="nf">IsAuthenticated</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="c1">// GetUsername returns the username of user related to the context
+</span><span class="c1"></span>	<span class="nf">GetUsername</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="c1">// IsSysAdmin returns whether the user is system admin
+</span><span class="c1"></span>	<span class="nf">IsSysAdmin</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="c1">// IsSolutionUser returns whether the user is solution user
+</span><span class="c1"></span>	<span class="nf">IsSolutionUser</span><span class="p">()</span> <span class="kt">bool</span>
+	<span class="c1">// HasReadPerm returns whether the user has read permission to the project
+</span><span class="c1"></span>	<span class="nf">HasReadPerm</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="c1">// HasWritePerm returns whether the user has write permission to the project
+</span><span class="c1"></span>	<span class="nf">HasWritePerm</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="c1">// HasAllPerm returns whether the user has all permissions to the project
+</span><span class="c1"></span>	<span class="nf">HasAllPerm</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">bool</span>
+	<span class="c1">// Get current user&#39;s all project
+</span><span class="c1"></span>	<span class="nf">GetMyProjects</span><span class="p">()</span> <span class="p">([]</span><span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+	<span class="c1">// Get user&#39;s role in provided project
+</span><span class="c1"></span>	<span class="nf">GetProjectRoles</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">[]</span><span class="kt">int</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述定义的<code>context</code>接口具体有三种实现分别为：admiral，local，secret。</p>
+
+<p>重点分析 local 也就是数据库模式的实现。在local 模式中，定义了一个信息的结构体用来管理用户和项目。通过这个结构体将用户和项目关联在一个。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// SecurityContext implements security.Context interface based on database
+</span><span class="c1"></span><span class="kd">type</span> <span class="nx">SecurityContext</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">user</span> <span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span>
+	<span class="nx">pm</span>   <span class="nx">promgr</span><span class="p">.</span><span class="nx">ProjectManager</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="isauthenticated">IsAuthenticated</h3>
+
+<p>真正的验证过程是在<code>core/filter</code>中的<code>security.go</code>实现的，<code>IsAuthenticated</code>函数只是调用之前处理好的内容。在<code>security.go</code>中已经获取到来用户和 pm 信息，验证是只需检查用户是否为空即可。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">func (s *SecurityContext) IsAuthenticated() bool {
+	return s.user != nil
+}</pre></td></tr></table>
+</div>
+</div>
+<h3 id="getprojectroles">GetProjectRoles</h3>
+
+<p>用来查找摸个项目用多少用户。先根据请求提供的用户名在数据库中查找多对应的用户信息，查找的 sql 语句如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sql := `select user_id, username, password, email, realname, comment, reset_uuid, salt,
+		sysadmin_flag, creation_time, update_time
+		from harbor_user u
+		where deleted = false  and user_id = ? and username = ? and reset_uuid = ? and email = ?`</pre></td></tr></table>
+</div>
+</div>
+<p>查询到用户数据之后，开始查询项目，传入的参数<code>projectIDOrName</code>。<code>SecurityContext</code>调用<code>ProjectManager</code>的<code>Get</code>方法来根据<code>projectIDOrName</code>参数查询项目。这个 Get方式根据<code>pmsDriver</code>驱动的不同调用不同的实现，因为这里<code>pmsDriver</code>驱动模式是<code>local</code>，会直接在数据中进行查询，具体的项目查询实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="c1">// Get ...
+</span><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">driver</span><span class="p">)</span> <span class="nf">Get</span><span class="p">(</span><span class="nx">projectIDOrName</span> <span class="kd">interface</span><span class="p">{})</span> <span class="p">(</span>
+	<span class="o">*</span><span class="nx">models</span><span class="p">.</span><span class="nx">Project</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">id</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ParseProjectIDOrName</span><span class="p">(</span><span class="nx">projectIDOrName</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="nx">id</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">dao</span><span class="p">.</span><span class="nf">GetProjectByID</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">dao</span><span class="p">.</span><span class="nf">GetProjectByName</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>最后在根据上述查询到的用户名和项目名来查询此项目有多少用户。</p>
+
+<p>最后返回给前端的 json 格式数据如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[
+  {
+    &#34;id&#34;: 1,
+    &#34;project_id&#34;: 1,
+    &#34;entity_name&#34;: &#34;admin&#34;,
+    &#34;role_name&#34;: &#34;projectAdmin&#34;,
+    &#34;role_id&#34;: 1,
+    &#34;entity_id&#34;: 1,
+    &#34;entity_type&#34;: &#34;u&#34;
+  },
+  {
+    &#34;id&#34;: 2,
+    &#34;project_id&#34;: 1,
+    &#34;entity_name&#34;: &#34;chenxu&#34;,
+    &#34;role_name&#34;: &#34;developer&#34;,
+    &#34;role_id&#34;: 2,
+    &#34;entity_id&#34;: 3,
+    &#34;entity_type&#34;: &#34;u&#34;
+  }
+]</pre></td></tr></table>
+</div>
+</div>
+<p>展现出来的效果如下：
+<img src="https://ws3.sinaimg.cn/large/006tNc79ly1g2w39ubsqaj316k0d675q.jpg" alt="" /></p>
+
+<h3 id="getmyprojects">GetMyProjects</h3>
+
+<p>查询实现如下，具体来说是调用了<code>ProjectManager</code>的<code>List</code>方法，根据<code>PSM</code>实现的具体驱动调用对应的方法。这里驱动是<code>local</code>，获取总的镜像数量和每个镜像的详细信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">result, err := s.pm.List(
+		&amp;models.ProjectQueryParam{
+			Member: &amp;models.MemberQuery{
+				Name:      s.GetUsername(),
+				GroupList: s.user.GroupList,
+			},
+		})</pre></td></tr></table>
+</div>
+</div>
+<p>前端接收到的json 数据格式如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;library/centos&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;project_id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;description&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;pull_count&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&#34;star_count&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&#34;tags_count&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;labels&#34;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="nt">&#34;creation_time&#34;</span><span class="p">:</span> <span class="s2">&#34;2019-05-10T04:21:34.499267Z&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;update_time&#34;</span><span class="p">:</span> <span class="s2">&#34;2019-05-10T04:21:34.499267Z&#34;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;library/ubuntu&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;project_id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;description&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;pull_count&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&#34;star_count&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&#34;tags_count&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;labels&#34;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="nt">&#34;creation_time&#34;</span><span class="p">:</span> <span class="s2">&#34;2019-05-10T04:22:17.538373Z&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;update_time&#34;</span><span class="p">:</span> <span class="s2">&#34;2019-05-10T04:22:17.538373Z&#34;</span>
+  <span class="p">}</span>
+<span class="p">]</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>展示界面如下
+<img src="https://ws3.sinaimg.cn/large/006tNc79ly1g2w5fb49e6j31fs06sgm5.jpg" alt="" /></p>
+
+<h3 id="getrolesbygroup">GetRolesByGroup</h3>
+
+<p>按组来查询用户，组的概念只有在 LADP 模式下才启用。</p>
+
+<h2 id="token-服务">token 服务</h2>
+
+<p>为<code>registry</code>和<code>notary</code>组件服务。这些组件需要 token 的验证服务才能正确的运行。</p>
+
+<p>当用户<code>pull/push</code>镜像时都需要使用到 token 服务，token 服务其作用的基本流程如下：
+<img src="https://docs.docker.com/registry/spec/images/v2-registry-auth.png" alt="" /></p>
+
+<p>下面具体讲解一下 harbor 中 token 服务是如何实现。当 harbor 的后端收到了GET <code>&quot;/service/token&quot;</code>路由请求时，会调用<code>token.go</code>中的 Get()方法。在 Get方法中主要完成一下几件事:
+- 获取请求中的 service即资源托管的服务地址<code>service=&quot;registry.docker.io&quot;</code>
+- 根据Authorization Service 创建 token
+- 将获取的 token 以 json 格式发送回去</p>
+
+<p>具体解释一下Authorization Service 是如何创建token 的。</p>
+
+<h3 id="生成-token">生成 token</h3>
+
+<p>在<code>func (g generalCreator) Create(r *http.Request) (*models.Token, error)</code>方法中主要的执行逻辑如下:
+- 获取请求中的 socpes。<code>scope=&quot;repository:samalba/my-app:pull,push&quot;</code>
+- 获取请求中的<code>securitycontext</code>和<code>ProjectManager</code>
+- 根据<code>socpes</code>获取用户对镜像仓库的资源有何种访问权限：pull or push
+- 迭代资源操作列表（检查ProjectManager是否有对应的 project 同时判断用户对其有何种权限），并尝试使用与资源类型匹配的筛选器来筛选操作。执行的结果信息都保存在 ctx 中
+- 使用用户名，service，access 来生成 token 并返回。</p>
+
+<p>这是生成 token的函数<code>MakeToken(username, service string, access []*token.ResourceActions) (*models.Token, error)</code>。生成 token 的核心函数如下：文件在<code>src/core/service/token/authutils.go#143</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">makeTokenCore</span><span class="p">(</span><span class="nx">issuer</span><span class="p">,</span> <span class="nx">subject</span><span class="p">,</span> <span class="nx">audience</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">expiration</span> <span class="kt">int</span><span class="p">,</span>
+	<span class="nx">access</span> <span class="p">[]</span><span class="o">*</span><span class="nx">token</span><span class="p">.</span><span class="nx">ResourceActions</span><span class="p">,</span> <span class="nx">signingKey</span> <span class="nx">libtrust</span><span class="p">.</span><span class="nx">PrivateKey</span><span class="p">)</span> <span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">token</span><span class="p">.</span><span class="nx">Token</span><span class="p">,</span> <span class="nx">expiresIn</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">issuedAt</span> <span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>从传入的数据中构造出镜像的基本信息：命名空间，镜像名，标签。具体数据结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">type image struct {
+	namespace string
+	repo      string
+	tag       string
+}</pre></td></tr></table>
+</div>
+</div>
+<p>这里有二个过滤器分别为<code>registryFilter</code>和<code>repositoryFilter</code>。后者用来判断用户对于某个具体的项目拥有什么样的权限，<code>rwm</code>or<code>RW</code>or<code>R</code>。</p>
+
+<h2 id="通知服务">通知服务</h2>
+
+<p>主要用来获取扫描策略和复制策略的变化情况。每一个订阅事件都需要传入二个参数来初始化通知功能，这二个参数分别为<code>topic</code>和<code>handler</code>。<code>topic</code>是需要通知事件的主题，<code>handler</code>是事件的处理方法。</p>
+
+<p>其中<code>handler</code>定义为以下接口类型，便于用户的扩充。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">NotificationHandler</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="c1">// Handle the event when it coming.
+</span><span class="c1"></span>	<span class="c1">// value might be optional, it depends on usages.
+</span><span class="c1"></span>	<span class="nf">Handle</span><span class="p">(</span><span class="nx">value</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kt">error</span>
+
+	<span class="c1">// IsStateful returns whether the handler is stateful or not.
+</span><span class="c1"></span>	<span class="c1">// If handler is stateful, it will not be triggerred in parallel.
+</span><span class="c1"></span>	<span class="c1">// Otherwise, the handler will be triggered concurrently if more
+</span><span class="c1"></span>	<span class="c1">// than one same handler are matched the topics.
+</span><span class="c1"></span>	<span class="nf">IsStateful</span><span class="p">()</span> <span class="kt">bool</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="漏洞扫描">漏洞扫描</h3>
+
+<p>接下来主要分析一下漏洞扫描服务的通知机制。镜像扫描的<code>topic</code>是<code>scan_all_policy</code>，<code>handler</code>是<code>ScanPolicyNotificationHandler</code>其用来处理扫描策略的改变。这里策略有二种每天和无，每天选项可以设置一个具体的时间。</p>
+
+<p>前端设置为每日上午 10 点进行扫描，发送给后端的数据 json格式为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"> &#34;scan_all_policy&#34;: {
+    &#34;value&#34;: {
+      &#34;parameter&#34;: {
+        &#34;daily_time&#34;: 7200
+      },
+      &#34;type&#34;: &#34;daily&#34;
+    },
+    &#34;editable&#34;: true
+  },</pre></td></tr></table>
+</div>
+</div>
+<p>在后端中会根据<code>scan_all_policy</code>的 <code>type</code> 字段执行对应的处理逻辑。首先取消之前的所有任务，避免阻塞。然后解析传入的时间构造调度<code>cron</code>，根据<code>cron</code>创建调度任务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">    <span class="c1">// 先取消所有扫描任务
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">cancelScanAllJobs</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Failed to cancel scan_all jobs, error: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="c1">// 解析前端传入的时间
+</span><span class="c1"></span>		<span class="nx">h</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">s</span> <span class="o">:=</span> <span class="nx">common_utils</span><span class="p">.</span><span class="nf">ParseOfftime</span><span class="p">(</span><span class="nx">notification</span><span class="p">.</span><span class="nx">DailyTime</span><span class="p">)</span>
+		<span class="nx">cron</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%d %d %d * * *&#34;</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">h</span><span class="p">)</span>
+		<span class="c1">// 创建定时的调度任务
+</span><span class="c1"></span>		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">utils</span><span class="p">.</span><span class="nf">ScheduleScanAllImages</span><span class="p">(</span><span class="nx">cron</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Failed to schedule scan_all job, error: %v&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在<code>ScheduleScanAllImages</code>中会任结构体，然后将任务通过 client 发送给<code>jobservice</code>组件。提交任务调用的是<code>jobservice</code>的<code>/api/v1/jobs</code>接口，<code>jobservice</code>完成对应的处理后，返回任务的状态码。</p>
+
+<h2 id="service-notifications-路由">/service/notifications/ 路由</h2>
+
+<h3 id="adminjob">adminjob</h3>
+
+<p>监听来自<code>jobservice</code>的<code>/service/notifications/jobs/adminjob/*</code>路由请求。为 job 在数据库和<code>jobservice</code>之间建立映射关系。job 在数据库中以<code>jobid</code>的形式，在<code>jobservice</code>中以<code>UUID</code>的方式进行标识。</p>
+
+<h3 id="clair">clair</h3>
+
+<p>用来监听 clair 的通知请求，监听的路由地址为<code>/service/notifications/clair/</code>。用来从 clair 获取漏洞数据并返回给前端展示。</p>
+
+<h3 id="jobs">jobs</h3>
+
+<p>用来处理 jobservice 的请求，监听的路由地址为<code>/service/notifications/jobs/*</code>。主要是用来更新扫描漏洞 job 的状态和更新镜像复制 job 的状态。</p>
+
+<h3 id="registry">registry</h3>
+
+<p>监听 registry 的时间，监听路由为<code>/service/notifications/</code>。实现了对docker push 和 pull 。其中的<code>Post</code>函数用来实现所有功能。</p>
+
+<p>当监听到新的<code>/service/notifications/</code>请求时，<code>Post</code>会首先提取出请求中<code>Notification</code>这是一个事件的包装器结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">// Notification holds all events.
+type Notification struct {
+	Events []Event
+}</pre></td></tr></table>
+</div>
+</div>
+<p>然后对传来的事件进行过滤，目前只支持二种事件。分别为：
+- 来自外部的 docker-client 的 pull or push 请求
+- 来自 jobservice 的 push 请求</p>
+
+<p>完成事件过滤后，开始对事件进行加工提取，获取以下数据并持久化存储在数据库中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">dao.AddAccessLog(models.AccessLog{
+				Username:  user,
+				ProjectID: pro.ProjectID,
+				RepoName:  repository,
+				RepoTag:   tag,
+				Operation: action,
+				OpTime:    time.Now(),
+			}</pre></td></tr></table>
+</div>
+</div>
+<p>接来是对具体的<code>push</code>或<code>pull</code>操作的实现。
+<strong>push</strong>
+当时<code>push</code>操作时，会首先检查数据库中是否有对应的<code>repository</code>。如果没有将操作的 push记录存储在数据库中，等待镜像的 manifest 文件准备好。</p>
+
+<p>等上述准备工作都完成之后，事件通知器发布事件。具体实现如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">err := notifier.Publish(topic.ReplicationEventTopicOnPush, rep_notification.OnPushNotification{
+					Image: image,
+				})</pre></td></tr></table>
+</div>
+</div>
+<p>上述操作会调用对应的处理器对镜像执行操作。可能是处理用户从上传来的镜像，也可能是镜像仓库之间的复制操作，具体要看调用的什么。当有镜像上传到存储库之后会检查是否开启了镜像自动扫描功能。</p>
+
+<p><strong>pull</strong>
+repository 中的pull计数器加 1。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/harbor/">harbor</a>
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/harbor_common/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Harbor common 文件夹分析</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/design_philosophy_on_data_and_semantics/">
+            <span class="next-text nav-default">Design Philosophy On Data And Semantics Part 4</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

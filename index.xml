@@ -6,10 +6,28 @@
     <description>Recent content on Chenxull </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 15 May 2019 13:48:51 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 15 May 2019 13:53:45 +0800</lastBuildDate>
     
 	<atom:link href="https://chenxull.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Harbor common 文件夹分析</title>
+      <link>https://chenxull.github.io/post/harbor_common/</link>
+      <pubDate>Wed, 15 May 2019 13:53:45 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/harbor_common/</guid>
+      <description>common 文件夹分析 ##api 定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&amp;rdq</description>
+    </item>
+    
+    <item>
+      <title>Harbor core 文件夹分析</title>
+      <link>https://chenxull.github.io/post/harbor_core/</link>
+      <pubDate>Wed, 15 May 2019 13:53:31 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/harbor_core/</guid>
+      <description>core 文件夹分析 此文件夹是 harbor 的核心组件。在根目录下有main.go和router.go二个文件。前者用来初始化整个后端项目，后者是对请求的路由处</description>
+    </item>
     
     <item>
       <title>Design Philosophy On Data And Semantics Part 4</title>
