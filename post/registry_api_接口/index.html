@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker Registry API V2 接口解析（一） - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。" /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Docker Registry API V2 接口解析（一）" />
+<meta property="og:description" content="HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/" />
+<meta property="article:published_time" content="2019-05-15T13:26:42&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-15T13:26:42&#43;08:00"/>
+
+<meta itemprop="name" content="Docker Registry API V2 接口解析（一）">
+<meta itemprop="description" content="HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。">
+
+
+<meta itemprop="datePublished" content="2019-05-15T13:26:42&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-15T13:26:42&#43;08:00" />
+<meta itemprop="wordCount" content="5997">
+
+
+
+<meta itemprop="keywords" content="Docker,registry," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker Registry API V2 接口解析（一）"/>
+<meta name="twitter:description" content="HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Docker Registry API V2 接口解析（一）</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-15 </span>
+        
+          <span class="more-meta"> 5997 words </span>
+          <span class="more-meta"> 12 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#http-api-v2-接口详细解析">HTTP API V2 接口详细解析</a>
+<ul>
+<li><a href="#1-所有方法-和url列表">1. 所有方法 和URL列表</a></li>
+<li><a href="#2-errors">2.Errors</a></li>
+<li><a href="#3-base">3.Base</a>
+<ul>
+<li><a href="#3-1-get-base">3.1 Get Base</a></li>
+<li><a href="#3-2-返回状态">3.2 返回状态</a></li>
+</ul></li>
+<li><a href="#4-tags">4. Tags</a>
+<ul>
+<li><a href="#4-1-get-tags">4.1 Get Tags</a></li>
+<li><a href="#4-2-返回状态码">4.2 返回状态码</a></li>
+<li><a href="#4-3-tags-pginated">4.3 Tags Pginated</a></li>
+</ul></li>
+<li><a href="#5-manifest">5. Manifest</a>
+<ul>
+<li><a href="#5-1-get-manifest">5.1 Get Manifest</a></li>
+<li><a href="#5-2-返回状态码">5.2 返回状态码</a></li>
+<li><a href="#5-3-put-manifest">5.3 Put Manifest</a></li>
+<li><a href="#5-4-状态代码">5.4 状态代码</a></li>
+<li><a href="#5-5-delete-manifest">5.5 DELETE MANIFEST</a></li>
+<li><a href="#5-6-状态代码-共8个">5.6 状态代码 共8个</a></li>
+</ul></li>
+<li><a href="#6-blob">6.Blob</a>
+<ul>
+<li><a href="#6-1-get-blob">6.1 GET BLOB</a></li>
+<li><a href="#返回状态码">返回状态码</a></li>
+<li><a href="#6-3-fetch-blob-part">6.3 Fetch Blob Part</a></li>
+<li><a href="#6-4-返回状态码">6.4 返回状态码</a></li>
+<li><a href="#6-5-delete-blob">6.5 DELETE BLOB</a></li>
+<li><a href="#6-6-返回状态码">6.6 返回状态码</a></li>
+</ul></li>
+<li><a href="#7-initiate-blob-upload">7. Initiate Blob Upload</a>
+<ul>
+<li><a href="#7-1-post-initiate-blob-upload-initiate-monolithic-blob-upload">7.1 POST INITIATE BLOB UPLOAD &ndash;Initiate Monolithic Blob Upload</a></li>
+<li><a href="#7-2-返回状态码">7.2 返回状态码</a></li>
+<li><a href="#7-3initiate-resumable-blob-upload">7.3Initiate Resumable Blob Upload</a></li>
+<li><a href="#7-4-返回状态码">7.4 返回状态码</a></li>
+<li><a href="#7-5-mount-blob">7.5 Mount Blob</a></li>
+</ul></li>
+<li><a href="#8-blob-upload">8. Blob Upload</a>
+<ul>
+<li><a href="#8-1-get-blob-upload">8.1 GET BLOB UPLOAD</a></li>
+<li><a href="#8-2-返回状态码">8.2 返回状态码</a></li>
+<li><a href="#8-3-patch-blob-upload">8.3 PATCH BLOB UPLOAD</a></li>
+<li><a href="#8-4-返回状态码">8.4 返回状态码</a></li>
+<li><a href="#8-5-chunked-upload">8.5 Chunked upload</a></li>
+<li><a href="#8-6-返回状态码">8.6 返回状态码</a></li>
+<li><a href="#8-7-put-blob-upload">8.7 PUT BLOB UPLOAD</a></li>
+<li><a href="#8-8返回状态码">8.8返回状态码</a></li>
+<li><a href="#8-9-delete-blob-upload">8.9 DELETE BLOB UPLOAD</a></li>
+<li><a href="#8-10返回状态码">8.10返回状态码</a></li>
+<li><a href="#9-catalog">9. Catalog</a></li>
+<li><a href="#9-1-get-catalog-catalog-fetch">9.1 GET CATALOG&mdash;Catalog Fetch</a></li>
+<li><a href="#9-2-返回状态码">9.2 返回状态码</a></li>
+<li><a href="#9-3-catalog-fetch-paginated">9.3 Catalog Fetch Paginated</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="http-api-v2-接口详细解析">HTTP API V2 接口详细解析</h1>
+
+<h2 id="1-所有方法-和url列表">1. 所有方法 和URL列表</h2>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Entity</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>GET</td>
+<td>/v2</td>
+<td>Base</td>
+<td>检查端点是否实现了Docker注册表API V2。</td>
+</tr>
+
+<tr>
+<td>GET</td>
+<td>/v2<name>/tags/list</td>
+<td>Tags</td>
+<td>获取由名称标识的存储库下的标签。</td>
+</tr>
+
+<tr>
+<td>GET</td>
+<td>/v2<name>/manifests/<reference></td>
+<td>Manifest</td>
+<td>获取由名称和引用标识的清单，其中引用可以是标签或摘要。HEAD请求也可以发送给这个端点，以获得资源信息，而无需接收所有数据。</td>
+</tr>
+
+<tr>
+<td>PUT</td>
+<td>/v2/<name>/manifests/<reference></td>
+<td>Manifest</td>
+<td>将通过名称和引用标识的清单，引用可以是标签或摘要。</td>
+</tr>
+
+<tr>
+<td>DELETE</td>
+<td>/v2/<name>/manifests/<reference></td>
+<td>Manifest</td>
+<td>删除由名称和引用标识的清单。请注意，清单只能通过摘要删除</td>
+</tr>
+
+<tr>
+<td>GET</td>
+<td>/v2/<name>/blobs/<digest></td>
+<td>Blob</td>
+<td>从摘要标识的注册表中检索blob。HEAD请求也可以发送给这个端点，以获得资源信息，而无需接收所有数据。</td>
+</tr>
+
+<tr>
+<td>DELETE</td>
+<td>/v2/<name>/blobs/<digest></td>
+<td>Blob</td>
+<td>删除按名称和摘要标识的blob</td>
+</tr>
+
+<tr>
+<td>POST</td>
+<td>/v2/<name>/blobs/uploads/</td>
+<td>Initiate Blob Upload</td>
+<td>启动可恢复的blob上传。如果成功，将提供上传位置以完成上传。或者，如果摘要参数存在，请求正文将用于在单个请求中完成上载。</td>
+</tr>
+
+<tr>
+<td>GET</td>
+<td>/v2/<name>/blobs/uploads/<uuid></td>
+<td>Blob Upload</td>
+<td>检索uuid标识的上传状态。此端点的主要目的是解决可恢复上载的当前状态。</td>
+</tr>
+
+<tr>
+<td>PATCH</td>
+<td>/v2/<name>/blobs/uploads/<uuid></td>
+<td>Blob Upload</td>
+<td>上传指定上传的数据块。</td>
+</tr>
+
+<tr>
+<td>PUT</td>
+<td>/v2/<name>/blobs/uploads/<uuid></td>
+<td>Blob Upload</td>
+<td>完成uuid指定的上传，可选地将正文附加为最终块。</td>
+</tr>
+
+<tr>
+<td>DELETE</td>
+<td>/v2/<name>/blobs/uploads/<uuid></td>
+<td>Blob Upload</td>
+<td>取消未完成的上传过程，释放相关资源。如果不调用，未完成的上传将最终超时。</td>
+</tr>
+
+<tr>
+<td>GET</td>
+<td>/v2/_catalog</td>
+<td>Catalog</td>
+<td>检索注册表中可用存储库的排序json列表</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="2-errors">2.Errors</h2>
+
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th align="left">code</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>On Success: Accepted</td>
+<td align="left">202 Accepted</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Success: Created</td>
+<td align="left">201</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Failure: Invalid Name or Reference</td>
+<td align="left">400 Bad Request</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Failure: Authentication Required</td>
+<td align="left">401 Unauthorized</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Failure: No Such Repository Error</td>
+<td align="left">404 Not Found</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Failure: Access Denied</td>
+<td align="left">403 Forbidden</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Failure: Too Many Requests</td>
+<td align="left">429 Too Many Requests</td>
+<td align="left"></td>
+</tr>
+
+<tr>
+<td>On Failure: Not allowed</td>
+<td align="left">405 Method Not Allowed</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+
+<p>| Code | Message | Description |<br />
+| &mdash; | &mdash; | &mdash; |
+| BLOB_UNKNOWN | registry未知的blob | 当指定存储库中的注册表不知道blob时，可能会返回此错误。这可以通过标准get返回，或者如果清单在上传过程中引用了未知层。 |<br />
+| BLOB_UPLOAD_INVALID | blob上传无效 | blob上载遇到错误，无法继续 |<br />
+| BLOB_UPLOAD_UNKNOWN | registry未知的blob上传 | 如果一个blob的上传被取消或则从未开始，将返回这个错误 |<br />
+| DIGEST_INVALID | 提供的摘要与上传的内容不匹配 | 上传blob时，注册表将检查内容是否与客户端提供的摘要匹配。错误可能包括带有关键字“摘要”的详细结构，包括无效的摘要字符串。当清单包含无效的层摘要时，也可能会返回此错误。 | | NAME_INVALID | 存储库名字无效 | 清单验证或任何API操作期间遇到无效的存储库名称。 |<br />
+| MANIFEST_BLOB_UNKNOWN | registry未知的blob | registry不知道manifest 的blob时，可能会返回此错误。 |<br />
+| MANIFEST_INVALID | manifest无效 | 上传期间，清单会经过多次检查，以确保有效性。如果这些检查失败，除非包含更具体的错误，否则可能会返回此错误。详细信息将包含验证失败的信息。 |<br />
+| MANIFEST_UNKNOWN | 未知manifest | 当存储库不知道由名称和标记标识的manifest时，将返回此错误。 |<br />
+| MANIFEST_UNVERIFIED | 清单签名验证失败 |  在清单上载期间，如果清单签名验证失败，将返回此错误。  |
+| NAME_INVALID | 存储库名字无效 | 清单验证或任何API操作期间遇到无效的存储库名称。 |<br />
+| NAME_UNKNOWN |   registry不知道存储库的名称 |如果注册表不知道操作过程中使用的名称，则返回此值。|
+| SIZE_INVALID | 提供的长度与内容长度不匹配 |上传图层时，将根据上传的内容检查提供的大小。如果它们不匹配，将返回此错误。|<br />
+| TAG_INVALID | manifest tag与URI不匹配 | 在清单上载期间，如果清单中的标记与uri标记不匹配，将返回此错误。 |<br />
+| UNAUTHORIZED |   需要认证 | 访问控制器无法验证客户端。通常，这将伴随一个WWW - Authenticate HTTP响应报头，指示如何认证。 |
+|  DENIED| 请求的资源访问被拒绝 | 访问控制器拒绝对资源上的操作进行访问。
+| UNSUPPORTED |不支持该操作。| 由于缺少实现或参数集无效，该操作不受支持。</p>
+
+<h2 id="3-base">3.Base</h2>
+
+<p>Base是基本V2 API路由，通常，这用于轻量级版本检查和验证registry身份。</p>
+
+<h3 id="3-1-get-base">3.1 Get Base</h3>
+
+<p>检查端点是否是实现了 Docker registry API v2</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>kind</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Host</td>
+<td>header</td>
+<td>标准HTTP主机标头。应该设置为registry的地址</td>
+</tr>
+
+<tr>
+<td>Authorization</td>
+<td>header</td>
+<td>符合RFC7235的授权报头。</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="3-2-返回状态">3.2 返回状态</h3>
+
+<p><strong>On Success :OK</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 ok</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure:Not Found</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">404 not found</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Authentication Required</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">401 Unauthorized
+WWW-Authenticate: &lt;scheme&gt; realm=&#34;&lt;realm&gt;&#34;, ...&#34;
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>客户端没有授权，字段的意思如下：</p>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>WWW-Authenticate</td>
+<td>符合RFC7235的认证质询报头。</td>
+</tr>
+
+<tr>
+<td>Content-Length</td>
+<td>返回json主体的长度</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Failure: Too Many Requests</strong>
+客户端在一个时间间隔内发出了太多请求。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">429 Too Many Requests
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-tags">4. Tags</h2>
+
+<h3 id="4-1-get-tags">4.1 Get Tags</h3>
+
+<p>返回存储库中所有的tags</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/&lt;name&gt;/tags/list
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>请求中应指定以下参数:</p>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Host</td>
+<td>header</td>
+<td>标准的HTTP请求，设置为registry的地址</td>
+</tr>
+
+<tr>
+<td>Authorization</td>
+<td>header</td>
+<td>符合RFC7235认证的咨询报头</td>
+</tr>
+
+<tr>
+<td>name</td>
+<td>path</td>
+<td>目标存储库的名字</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="4-2-返回状态码">4.2 返回状态码</h3>
+
+<p><strong>On Success: OK</strong></p>
+
+<p>显示目标存储库中所有的tag</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 OK
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+    &#34;name&#34;: &lt;name&gt;,
+    &#34;tags&#34;: [
+        &lt;tag&gt;,
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Authentication Required</strong></p>
+
+<p>客户端未被授权</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">401 Unauthorized
+WWW-Authenticate: &lt;scheme&gt; realm=&#34;&lt;realm&gt;&#34;, ...&#34;
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: No Such Repository Error</strong></p>
+
+<p>注册表不知道存储库。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">404 Not Found
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Access Denied</strong></p>
+
+<p>客户端没有访问存储库的必要权限</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">403 Forbidden
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<h3 id="4-3-tags-pginated">4.3 Tags Pginated</h3>
+
+<p>返回指定存储库的部分标记。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/&lt;name&gt;/tags/list?n=&lt;integer&gt;&amp;last=&lt;integer&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>请求中应指定以下参数:</p>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>name</td>
+<td>path</td>
+<td>目标存储库的名字</td>
+</tr>
+
+<tr>
+<td>n</td>
+<td>query</td>
+<td>每个response中显示实体的最大数，如果没有指定的话，显示所有的对向</td>
+</tr>
+
+<tr>
+<td>last</td>
+<td>query</td>
+<td>结果集</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Success: OK</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 OK
+Content-Length: &lt;length&gt;
+Link: &lt;&lt;url&gt;?n=&lt;last n value&gt;&amp;last=&lt;last entry from response&gt;&gt;; rel=&#34;next&#34;
+Content-Type: application/json; charset=utf-8
+
+{
+    &#34;name&#34;: &lt;name&gt;,
+    &#34;tags&#34;: [
+        &lt;tag&gt;,
+        ...
+    ],
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Authentication Required</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">401 Unauthorized
+WWW-Authenticate: &lt;scheme&gt; realm=&#34;&lt;realm&gt;&#34;, ...&#34;
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: No Such Repository Error</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">404 Not Found
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Access Denied</strong></p>
+
+<p><strong>On Failure: Too Many Requests</strong></p>
+
+<h2 id="5-manifest">5. Manifest</h2>
+
+<p>创建、更新、删除和检索清单。</p>
+
+<h3 id="5-1-get-manifest">5.1 Get Manifest</h3>
+
+<p>获取由名称和引用标识的清单，其中引用可以是标签或摘要。HEAD请求也可以发送给这个端点，以获得资源信息，而无需接收所有数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/&lt;name&gt;/manifests/&lt;reference&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>请求中应该包含如下参数：</p>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Host</td>
+<td>Header</td>
+<td>Standard HTTP Host Header. Should be set to the registry host.</td>
+</tr>
+
+<tr>
+<td>Authorization</td>
+<td>Header</td>
+<td>An RFC7235 compliant authorization header.</td>
+</tr>
+
+<tr>
+<td>name</td>
+<td>path</td>
+<td>目标存储库的名字</td>
+</tr>
+
+<tr>
+<td>reference</td>
+<td>path</td>
+<td>目标manifest的tag或摘要</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="5-2-返回状态码">5.2 返回状态码</h3>
+
+<p><strong>On Success: OK</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 OK
+Docker-Content-Digest: &lt;digest&gt;
+Content-Type: &lt;media type of manifest&gt;
+
+{
+   &#34;name&#34;: &lt;name&gt;,
+   &#34;tag&#34;: &lt;tag&gt;,
+   &#34;fsLayers&#34;: [
+      {
+         &#34;blobSum&#34;: &#34;&lt;digest&gt;&#34;
+      },
+      ...
+    ]
+   ],
+   &#34;history&#34;: &lt;v1 images&gt;,
+   &#34;signature&#34;: &lt;JWS&gt;
+}</pre></td></tr></table>
+</div>
+</div>
+<p>下面的参数需要：</p>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Docker-Content-Digest</td>
+<td>请求的目标内容的摘要</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Failure: Bad Request</strong></p>
+
+<p>名称或引用无效</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>响应正文中可能包含的错误代码列举如下:</p>
+
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Message</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>NAME_INVALID</td>
+<td>无效存储库名称</td>
+<td>清单验证或任何API操作期间遇到无效的存储库名称。</td>
+</tr>
+
+<tr>
+<td>TAG_INVALID</td>
+<td>manifest的tag不符合 URL</td>
+<td>在清单上载期间，如果清单中的标记与uri标记不匹配，将返回此错误。</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Failure: Authentication Required</strong></p>
+
+<p><strong>On Failure: No Such Repository Error</strong></p>
+
+<p><strong>On Failure: Access Denied</strong></p>
+
+<p><strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="5-3-put-manifest">5.3 Put Manifest</h3>
+
+<p>上传通过name和reference标识的manifest，其中reference为tag或digest</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">PUT /v2/&lt;name&gt;/manifests/&lt;reference&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Type: &lt;media type of manifest&gt;
+
+{
+   &#34;name&#34;: &lt;name&gt;,
+   &#34;tag&#34;: &lt;tag&gt;,
+   &#34;fsLayers&#34;: [
+      {
+         &#34;blobSum&#34;: &#34;&lt;digest&gt;&#34;
+      },
+      ...
+    ]
+   ],
+   &#34;history&#34;: &lt;v1 images&gt;,
+   &#34;signature&#34;: &lt;JWS&gt;
+}</pre></td></tr></table>
+</div>
+</div>
+<h3 id="5-4-状态代码">5.4 状态代码</h3>
+
+<p><strong>On Success: Created</strong></p>
+
+<p>清单已被注册表接受，并以指定的名称和标签存储。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">201 Created
+Location: &lt;url&gt;
+Content-Length: 0
+Docker-Content-Digest: &lt;digest&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Invalid Manifest</strong></p>
+
+<p>收到清单的错误代码。客户端应解决该问题，然后重试该请求。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>错误代码：
+响应正文中可能包含的错误代码列举如下:</p>
+
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Message</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>NAME_INVALID</td>
+<td>无效存储库名称</td>
+<td>清单验证或任何API操作期间遇到无效的存储库名称。</td>
+</tr>
+
+<tr>
+<td>TAG_INVALID</td>
+<td>manifest的tag不符合 URL</td>
+<td>在清单上载期间，如果清单中的标记与uri标记不匹配，将返回此错误。</td>
+</tr>
+
+<tr>
+<td>BLOB_UNKNOWN</td>
+<td>registry未知的blob</td>
+<td>当指定存储库中的注册表不知道blob时，可能会返回此错误。这可以通过标准get返回，或者如果清单在上传过程中引用了未知层。</td>
+</tr>
+
+<tr>
+<td>MANIFEST_INVALID</td>
+<td>manifest无效</td>
+<td>上传期间，清单会经过多次检查，以确保有效性。如果这些检查失败，除非包含更具体的错误，否则可能会返回此错误。详细信息将包含验证失败的信息。</td>
+</tr>
+
+<tr>
+<td>MANIFEST_UNVERIFIED</td>
+<td>清单签名验证失败</td>
+<td>在清单上载期间，如果清单签名验证失败，将返回此错误。</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Failure: Authentication Required</strong> 401
+<strong>On Failure: No Such Repository Error</strong> 404
+<strong>On Failure: Access Denied</strong>403
+<strong>On Failure: Too Many Requests</strong>429</p>
+
+<p><strong>On Failure: Missing Layer(s)</strong></p>
+
+<p>在清单上载过程中，可能缺少一层或多层。如果是，错误响应中将列举缺失的层。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+    &#34;errors:&#34; [{
+            &#34;code&#34;: &#34;BLOB_UNKNOWN&#34;,
+            &#34;message&#34;: &#34;blob unknown to registry&#34;,
+            &#34;detail&#34;: {
+                &#34;digest&#34;: &#34;&lt;digest&gt;&#34;
+            }
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Not allowed</strong> 405</p>
+
+<h3 id="5-5-delete-manifest">5.5 DELETE MANIFEST</h3>
+
+<p>删除由名称和引用标识的manifest。manifest只能通过摘要删除</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">DELETE /v2/&lt;name&gt;/manifests/&lt;reference&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<h3 id="5-6-状态代码-共8个">5.6 状态代码 共8个</h3>
+
+<p><strong>On Success: Accepted</strong> 202 Accepted</p>
+
+<p><strong>On Failure: Invalid Name or Reference</strong> 400 Bad request</p>
+
+<p>响应正文中可能包含的错误代码列举如下:</p>
+
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Message</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>NAME_INVALID</td>
+<td>无效存储库名称</td>
+<td>清单验证或任何API操作期间遇到无效的存储库名称。</td>
+</tr>
+
+<tr>
+<td>TAG_INVALID</td>
+<td>manifest的tag不符合 URL</td>
+<td>在清单上载期间，如果清单中的标记与uri标记不匹配，将返回此错误。</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Failure: Authentication Required</strong> 401
+<strong>On Failure: No Such Repository Error</strong> 404
+<strong>On Failure: Access Denied</strong> 403
+<strong>On Failure: Too Many Requests</strong> 429
+<strong>On Failure: Unknown Manifest</strong> 404
+<strong>On Failure: Not allowed</strong> 405</p>
+
+<h2 id="6-blob">6.Blob</h2>
+
+<p>通过name和reference来操作blob， 用来通过digest来拉取和删除layer</p>
+
+<h3 id="6-1-get-blob">6.1 GET BLOB</h3>
+
+<p>从摘要标识的注册表(registry)中检索blob。HEAD请求也可以发送给这个端点，以获得资源信息，而无需接收所有数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/&lt;name&gt;/blobs/&lt;digest&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>host</td>
+<td>header</td>
+<td></td>
+</tr>
+
+<tr>
+<td>authorization</td>
+<td>header</td>
+<td></td>
+</tr>
+
+<tr>
+<td>name</td>
+<td>path</td>
+<td>目标存储库的名字</td>
+</tr>
+
+<tr>
+<td>digest</td>
+<td>path</td>
+<td>所需要blob的digest</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="返回状态码">返回状态码</h3>
+
+<p><strong>On Success: OK</strong></p>
+
+<p>blob的摘要可用，blob的内容将会出现在请求的正文中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 OK
+Content-Length: &lt;length&gt;
+Docker-Content-Digest: &lt;digest&gt;
+Content-Type: application/octet-stream
+
+&lt;blob binary data&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Success: Temporary Redirect</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">307 Temporary Redirect
+Location: &lt;blob location&gt;
+Docker-Content-Digest: &lt;digest&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Bad Request</strong>
+客户端需要解决的请求有问题，例如无效的名称或标签。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>| Code | Message | Description |<br />
+| &mdash; | &mdash; | &mdash; |
+| NAME_INVALID | 存储库名字无效 | 清单验证或任何API操作期间遇到无效的存储库名称。 |
+| DIGEST_INVALID | 提供的摘要与上传的内容不匹配 | 上传blob时，注册表将检查内容是否与客户端提供的摘要匹配。错误可能包括带有关键字“摘要”的详细结构，包括无效的摘要字符串。当清单包含无效的层摘要时，也可能会返回此错误。 |</p>
+
+<p><strong>On Failure: Not Found</strong></p>
+
+<p>注册表不知道由名称和摘要标识的blob。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">404 Not Found
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;errors:&#34; [
+	    {
+            &#34;code&#34;: &lt;error code&gt;,
+            &#34;message&#34;: &#34;&lt;error message&gt;&#34;,
+            &#34;detail&#34;: ...
+        },
+        ...
+    ]
+}</pre></td></tr></table>
+</div>
+</div>
+<p>| Code | Message | Description |<br />
+| &mdash; | &mdash; | &mdash; |
+| BLOB_UNKNOWN | registry未知的blob | 当指定存储库中的注册表不知道blob时，可能会返回此错误。这可以通过标准get返回，或者如果清单在上传过程中引用了未知层。 |<br />
+| NAME_UNKNOWN |   registry不知道存储库的名称 |如果注册表不知道操作过程中使用的名称，则返回此值。|</p>
+
+<p><strong>On Failure: Authentication Required</strong> 401
+<strong>On Failure: No Such Repository Error</strong> 404
+<strong>On Failure: Access Denied</strong> 403
+<strong>On Failure: Too Many Requests</strong> 429</p>
+
+<h3 id="6-3-fetch-blob-part">6.3 Fetch Blob Part</h3>
+
+<p>此端点还可以支持符合RFC7233的范围请求。可以通过发出HEAD请求来检测支持。如果返回标头Accept-Range :字节，则可以使用范围请求来获取部分内容。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/&lt;name&gt;/blobs/&lt;digest&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Range: bytes=&lt;start&gt;-&lt;end&gt;</pre></td></tr></table>
+</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>host</td>
+<td>header</td>
+<td></td>
+</tr>
+
+<tr>
+<td>authorization</td>
+<td>header</td>
+<td></td>
+</tr>
+
+<tr>
+<td>name</td>
+<td>path</td>
+<td>目标存储库的名字</td>
+</tr>
+
+<tr>
+<td>digest</td>
+<td>path</td>
+<td>所需要blob的digest</td>
+</tr>
+
+<tr>
+<td>Range</td>
+<td>header</td>
+<td>HTTP范围标头，指定blob区块。</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="6-4-返回状态码">6.4 返回状态码</h3>
+
+<p><strong>On Success: Partial Content</strong>
+<strong>On Failure: Bad Request</strong>
+<strong>On Failure: Not Found</strong>
+<strong>On Failure: Requested Range Not Satisfiable</strong> 416 Requested Range Not Satisfiable
+无法满足请求内容的范围规范。如果范围的格式不正确，或者范围超出了内容的有效大小，就会发生这种情况。</p>
+
+<p><strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="6-5-delete-blob">6.5 DELETE BLOB</h3>
+
+<p>删除按名称和摘要标识的斑点</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">DELETE /v2/&lt;name&gt;/blobs/&lt;digest&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<h3 id="6-6-返回状态码">6.6 返回状态码</h3>
+
+<p><strong>On Success: Partial Content</strong>
+<strong>On Failure: Bad Request</strong>
+<strong>On Failure: Not Found</strong>
+<strong>On Failure: Method Not Allowed</strong> 405  不允许Blob删除，因为注册表被配置为直通缓存或删除已被禁用</p>
+
+<p><strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h2 id="7-initiate-blob-upload">7. Initiate Blob Upload</h2>
+
+<p>启动blob上传。此端点可用于创建可恢复上传或整体上传。</p>
+
+<h3 id="7-1-post-initiate-blob-upload-initiate-monolithic-blob-upload">7.1 POST INITIATE BLOB UPLOAD &ndash;Initiate Monolithic Blob Upload</h3>
+
+<p>启动可恢复的blob上传。如果成功，将提供上传位置以完成上传。或者，如果摘要参数存在，请求正文将用于在单个请求中完成上载。</p>
+
+<p>在单个请求中上载由摘要参数标识的blob。除非返回可恢复的错误，否则此上载将无法恢复。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">POST /v2/&lt;name&gt;/blobs/uploads/?digest=&lt;digest&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Length: &lt;length of blob&gt;
+Content-Type: application/octect-stream
+
+&lt;binary data&gt;</pre></td></tr></table>
+</div>
+</div>
+<h3 id="7-2-返回状态码">7.2 返回状态码</h3>
+
+<p><strong>On Success: Created</strong>
+blob已在注册表中创建，并在提供的位置可用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">201 Created
+Location: &lt;blob location&gt;
+Content-Length: 0
+Docker-Upload-UUID: &lt;uuid&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Invalid Name or Digest</strong>
+<strong>On Failure: Not allowed</strong>
+<strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="7-3initiate-resumable-blob-upload">7.3Initiate Resumable Blob Upload</h3>
+
+<p>用空的请求体启动可恢复的blob上载。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">POST /v2/&lt;name&gt;/blobs/uploads/
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Length: 0</pre></td></tr></table>
+</div>
+</div>
+<h3 id="7-4-返回状态码">7.4 返回状态码</h3>
+
+<p><strong>On Success: Created</strong>
+<strong>On Failure: Invalid Name or Digest</strong>
+<strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="7-5-mount-blob">7.5 Mount Blob</h3>
+
+<p>从另一个存储库中装载由装载参数标识的blob。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">POST /v2/&lt;name&gt;/blobs/uploads/?mount=&lt;digest&gt;&amp;from=&lt;repository name&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Length: 0</pre></td></tr></table>
+</div>
+</div>
+<p>mount: Digest of blob to mount from the source repository.
+from: Name of the source repositoryName of the source repository.</p>
+
+<h2 id="8-blob-upload">8. Blob Upload</h2>
+
+<p>与blob上传交互。客户端永远不应该为这个端点组装URL，而应该只通过相关API请求的位置标题。客户端应使用通过上传相关API调用返回的最新值来保留位置标头及其参数。</p>
+
+<h3 id="8-1-get-blob-upload">8.1 GET BLOB UPLOAD</h3>
+
+<p>检索uuid标识的上传状态。此端点的主要目的是解决可恢复上载的当前状态。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;</pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-2-返回状态码">8.2 返回状态码</h3>
+
+<p><strong>On Success: Upload Progress</strong></p>
+
+<p>上传是已知的，正在进行中。上次接收的偏移量在范围标题中可用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">204 No Content
+Range: 0-&lt;offset&gt;
+Content-Length: 0
+Docker-Upload-UUID: &lt;uuid&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Bad Request</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Message</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>BLOB_UPLOAD_INVALID</td>
+<td>blob上传无效</td>
+<td>blob上载遇到错误，无法继续</td>
+</tr>
+
+<tr>
+<td>NAME_INVALID</td>
+<td>存储库名字无效</td>
+<td>清单验证或任何API操作期间遇到无效的存储库名称。</td>
+</tr>
+
+<tr>
+<td>DIGEST_INVALID</td>
+<td>提供的摘要与上传的内容不匹配</td>
+<td>上传blob时，注册表将检查内容是否与客户端提供的摘要匹配。错误可能包括带有关键字“摘要”的详细结构，包括无效的摘要字符串。当清单包含无效的层摘要时，也可能会返回此错误。</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>On Failure: Not Found</strong>
+<strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="8-3-patch-blob-upload">8.3 PATCH BLOB UPLOAD</h3>
+
+<p>上传指定上传的数据块</p>
+
+<p><strong>stream upload</strong>
+上传要上传的数据流，但不完成上传</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">PATCH /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Type: application/octet-stream
+
+&lt;binary data&gt;</pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-4-返回状态码">8.4 返回状态码</h3>
+
+<p><strong>On Success: Data Accepted</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">204 No Content
+Location: /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;
+Range: 0-&lt;offset&gt;
+Content-Length: 0
+Docker-Upload-UUID: &lt;uuid&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Bad Request</strong>
+<strong>On Failure: Not Found</strong>
+<strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="8-5-chunked-upload">8.5 Chunked upload</h3>
+
+<p>将一大块数据上传到指定的上传，但不完成上传。数据将上传到指定的内容范围。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">PATCH /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Range: &lt;start of range&gt;-&lt;end of range, inclusive&gt;
+Content-Length: &lt;length of chunk&gt;
+Content-Type: application/octet-stream
+
+&lt;binary chunk&gt;</pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-6-返回状态码">8.6 返回状态码</h3>
+
+<p><strong>On Success: Chunk Accepted</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">204 No Content
+Location: /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;
+Range: 0-&lt;offset&gt;
+Content-Length: 0
+Docker-Upload-UUID: &lt;uuid&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Bad Request</strong>
+<strong>On Failure: Not Found</strong>
+<strong>On Failure: Requested Range Not Satisfiable</strong>内容范围规范不能被接受，因为它与当前进度不重叠或者无效。</p>
+
+<p><strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="8-7-put-blob-upload">8.7 PUT BLOB UPLOAD</h3>
+
+<p>完成uuid指定的上传，可选地将正文附加为最终块。完成上传，必要时提供身体中的所有数据。一个没有正文的请求将会用之前上传的内容完成上传。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">PUT /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;?digest=&lt;digest&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Length: &lt;length of data&gt;
+Content-Type: application/octet-stream
+
+&lt;binary data&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>digest:之前已经上传的blob</p>
+
+<h3 id="8-8返回状态码">8.8返回状态码</h3>
+
+<p><strong>On Success: Upload Complete</strong>
+上传已经完成并被注册表接受。规范位置将在位置标题中可用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">204 No Content
+Location: &lt;blob location&gt;
+Content-Range: &lt;start of range&gt;-&lt;end of range, inclusive&gt;
+Content-Length: 0
+Docker-Content-Digest: &lt;digest&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Failure: Bad Request</strong>
+<strong>On Failure: Not Found</strong>
+<strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="8-9-delete-blob-upload">8.9 DELETE BLOB UPLOAD</h3>
+
+<p>取消未完成的上传过程，释放相关资源。如果不调用，未完成的上传将最终超时。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">DELETE /v2/&lt;name&gt;/blobs/uploads/&lt;uuid&gt;
+Host: &lt;registry host&gt;
+Authorization: &lt;scheme&gt; &lt;token&gt;
+Content-Length: 0</pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-10返回状态码">8.10返回状态码</h3>
+
+<p><strong>On Success: Upload Deleted</strong>
+<strong>On Failure: Bad Request</strong>
+<strong>On Failure: Not Found</strong>
+<strong>On Failure: Authentication Required</strong>
+<strong>On Failure: No Such Repository Error</strong>
+<strong>On Failure: Access Denied</strong>
+<strong>On Failure: Too Many Requests</strong></p>
+
+<h3 id="9-catalog">9. Catalog</h3>
+
+<p>列出本地registry群集中的一组可用存储库。没有提供上游可用的任何指示。应用程序只能确定存储库是否可用，但如果不可用，则无法确定。</p>
+
+<h3 id="9-1-get-catalog-catalog-fetch">9.1 GET CATALOG&mdash;Catalog Fetch</h3>
+
+<p>检索注册表中可用存储库的排序json列表。</p>
+
+<p>请求完整的可用存储库列表。该实现可以施加最大限制，并返回带有分页链接的部分集合。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/_catalog</pre></td></tr></table>
+</div>
+</div>
+<h3 id="9-2-返回状态码">9.2 返回状态码</h3>
+
+<p><strong>On Success: OK</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 OK
+Content-Length: &lt;length&gt;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;repositories&#34;: [
+		&lt;name&gt;,
+		...
+	]
+}</pre></td></tr></table>
+</div>
+</div>
+<h3 id="9-3-catalog-fetch-paginated">9.3 Catalog Fetch Paginated</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">GET /v2/_catalog?n=&lt;integer&gt;&amp;last=&lt;integer&gt;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>On Success: OK</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">200 OK
+Content-Length: &lt;length&gt;
+Link: &lt;&lt;url&gt;?n=&lt;last n value&gt;&amp;last=&lt;last entry from response&gt;&gt;; rel=&#34;next&#34;
+Content-Type: application/json; charset=utf-8
+
+{
+	&#34;repositories&#34;: [
+		&lt;name&gt;,
+		...
+	]
+	&#34;next&#34;: &#34;&lt;url&gt;?last=&lt;name&gt;&amp;n=&lt;last value of n&gt;&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-15
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">Docker</a>
+          <a href="/tags/registry/">registry</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/my-first-post/">
+            <span class="next-text nav-default">My First Post</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

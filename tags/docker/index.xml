@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on Chenxull </title>
+    <link>https://chenxull.github.io/tags/docker/</link>
+    <description>Recent content in Docker on Chenxull </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 15 May 2019 13:26:42 +0800</lastBuildDate>
+    
+	<atom:link href="https://chenxull.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Docker Registry API V2 接口解析（一）</title>
+      <link>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/</link>
+      <pubDate>Wed, 15 May 2019 13:26:42 +0800</pubDate>
+      
+      <guid>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/</guid>
+      <description>HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。</description>
+    </item>
+    
+  </channel>
+</rss>
