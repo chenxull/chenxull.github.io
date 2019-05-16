@@ -2,8 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://chenxull.github.io/tags/</loc>
+    <lastmod>2019-05-16T14:49:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/about/</loc>
+    <lastmod>2019-05-16T14:49:12+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://chenxull.github.io/</loc>
-    <lastmod>2019-05-16T14:39:49+08:00</lastmod>
+    <lastmod>2019-05-16T14:49:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://chenxull.github.io/tags/</loc>
+    <lastmod>2019-05-16T14:49:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -15,12 +34,6 @@
   
   <url>
     <loc>https://chenxull.github.io/post/</loc>
-    <lastmod>2019-05-16T14:39:49+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/</loc>
     <lastmod>2019-05-16T14:39:49+08:00</lastmod>
     <priority>0</priority>
   </url>
