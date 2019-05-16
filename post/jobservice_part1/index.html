@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>harbor 之 Jobservice 解析 （一） - Chenxull </title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="十三画生" /><meta name="description" content="陈旭的个人技术博客网站，主要关注容器,serverless,kubernetes,微服务等云原生技术 " /><meta name="keywords" content="Golang, Kubernets, Harbor" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://chenxull.github.io/post/jobservice_part1/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="harbor 之 Jobservice 解析 （一）" />
+<meta property="og:description" content="陈旭的个人技术博客网站，主要关注容器,serverless,kubernetes,微服务等云原生技术 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://chenxull.github.io/post/jobservice_part1/" />
+<meta property="article:published_time" content="2019-05-16T14:39:49&#43;08:00"/>
+<meta property="article:modified_time" content="2019-05-16T14:39:49&#43;08:00"/>
+
+<meta itemprop="name" content="harbor 之 Jobservice 解析 （一）">
+<meta itemprop="description" content="陈旭的个人技术博客网站，主要关注容器,serverless,kubernetes,微服务等云原生技术 ">
+
+
+<meta itemprop="datePublished" content="2019-05-16T14:39:49&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-16T14:39:49&#43;08:00" />
+<meta itemprop="wordCount" content="2358">
+
+
+
+<meta itemprop="keywords" content="harbor,Golang,源码," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="harbor 之 Jobservice 解析 （一）"/>
+<meta name="twitter:description" content="陈旭的个人技术博客网站，主要关注容器,serverless,kubernetes,微服务等云原生技术 "/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Chenxull</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Chenxull</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">harbor 之 Jobservice 解析 （一）</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-16 </span>
+        
+          <span class="more-meta"> 2358 words </span>
+          <span class="more-meta"> 5 mins read </span>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#harbor-之-jobservice-解析-一">harbor 之 Jobservice 解析 （一）</a>
+<ul>
+<li><a href="#main-go">main.go</a>
+<ul>
+<li><a href="#loadandrun-方法">LoadAndRun 方法</a>
+<ul>
+<li><a href="#api-server">API Server</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="harbor-之-jobservice-解析-一">harbor 之 Jobservice 解析 （一）</h1>
+
+<p>jobservice 是 harbor中用来处理 job 的组件。在 1.75 版本中job 分为三种类型，分别为：<code>GC</code>,<code>Replication</code>，<code>Scan</code>。</p>
+
+<p>因为 jobservice 在后端中作为守护进程为其他组件提供服务，在和其他组件进行通信时为确保通信安全，其他组件在访问<code>jobservice</code>的 API 时，访问请求的<code>header</code>中必须要有<code>Authorization</code>字段，样例如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Authorization : Harbor-Secret &lt;secret&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>这里的<code>secret</code>由环境变量<code>CORE_SECRET</code>提供</p>
+
+<p><strong>样例</strong>
+<code>POST /api/v1/jobs</code>
+&gt; submit job</p>
+
+<ul>
+<li>request body</li>
+
+<li><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+&#34;job&#34;: {
+    &#34;name&#34;: &#34;demo&#34;,
+    &#34;parameters&#34;: {
+        &#34;p1&#34;: &#34;just a demo&#34;
+    },
+    &#34;status_hook&#34;: &#34;https://my-hook.com&#34;,
+    &#34;metadata&#34;: {
+        &#34;kind&#34;: &#34;Generic&#34;, // or &#34;Scheduled&#34; or &#34;Periodic&#34;
+        &#34;schedule_delay&#34;: 90, // seconds, only required when kind is &#34;Scheduled&#34;
+        &#34;cron_spec&#34;: &#34;* 5 * * * *&#34;, // only required when kind is &#34;Periodic&#34;
+        &#34;unique&#34;: false
+    }
+}
+}</pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p>Response</p>
+
+<ul>
+<li><p>202 Accepted</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+&#34;job&#34;: {
+&#34;id&#34;: &#34;uuid-job&#34;,
+&#34;status&#34;: &#34;pending&#34;,
+&#34;name&#34;: &#34;DEMO&#34;,
+&#34;kind&#34;: &#34;Generic&#34;,
+&#34;unique&#34;: false,
+&#34;ref_link&#34;: &#34;/api/v1/jobs/uuid-job&#34;,
+&#34;enqueue_time&#34;: &#34;2018-10-10 12:00:00&#34;,
+&#34;update_time&#34;: &#34;2018-10-10 13:00:00&#34;,
+&#34;multiple_executions&#34;: false // To indicate if the job has sub executions
+}
+}</pre></td></tr></table>
+</div>
+</div></li>
+</ul></li>
+</ul>
+
+<p><sup>401</sup>&frasl;<sub>500</sub> Error</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;code&#34;: 500,
+    &#34;err&#34;: &#34;short error message&#34;,
+    &#34;description&#34;: &#34;detailed error message&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<p><code>GET /api/v1/jobs/{job_id}</code>
+&gt;Get job stats</p>
+
+<p>Response
+200 OK</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;job&#34;: {
+        &#34;id&#34;: &#34;uuid-job&#34;,
+        &#34;status&#34;: &#34;pending&#34;,
+        &#34;name&#34;: &#34;DEMO&#34;,
+        &#34;kind&#34;: &#34;Periodic&#34;,
+        &#34;unique&#34;: false,
+        &#34;ref_link&#34;: &#34;/api/v1/jobs/uuid-job&#34;,
+        &#34;enqueue_time&#34;: 1539164886,
+        &#34;update_time&#34;: 1539164886,
+        &#34;run_at&#34;: 1539164986,
+        &#34;cron_spec&#34;: &#34;* 5 * * * * &#34;,
+        &#34;check_in&#34;: &#34;check in message&#34;, // if check in message
+        &#34;check_in_at&#34;: 1539164889, // if check in message
+        &#34;die_at&#34;: 0,
+        &#34;hook_status&#34;: &#34;http://status-check.com&#34;,
+        &#34;executions&#34;: [&#34;uuid-sub-job&#34;], // the ids of sub executions of the job
+        &#34;multiple_executions&#34;: true
+    }
+}</pre></td></tr></table>
+</div>
+</div>
+<p><sup>401</sup>&frasl;<sub>500</sub> Error</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;code&#34;: 500,
+    &#34;err&#34;: &#34;short error message&#34;,
+    &#34;description&#34;: &#34;detailed error message&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<p><code>POST /api/v1/jobs/{job_id}</code>
+&gt;Stop/Cancel/Retry job</p>
+
+<p>Request body</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;action&#34;: &#34;stop&#34; //or &#34;cancel&#34; or &#34;retry&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<p>Response
+204 No content
+401/404/500/501 Error</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;code&#34;: 500,
+    &#34;err&#34;: &#34;short error message&#34;,
+    &#34;description&#34;: &#34;detailed error message&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<p><code>GET /api/v1/jobs/{job_id}/log</code>
+&gt;Retrieve job log
+Response</p>
+
+<p>200 OK
+Log text bytes</p>
+
+<p>401/400/404/500 Error</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;code&#34;: 500,
+    &#34;err&#34;: &#34;short error message&#34;,
+    &#34;description&#34;: &#34;detailed error message&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<p><code>GET /api/v1/stats</code>
+&gt;Check job service healthy status</p>
+
+<p>Response</p>
+
+<p>200 OK</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[{
+    &#34;worker_pool_id&#34;: &#34;pool1&#34;,
+    &#34;started_at&#34;: 1539164886,
+    &#34;heartbeat_at&#34;: 1539164986,
+    &#34;job_names&#34;: [&#34;DEMO&#34;],
+    &#34;concurrency&#34;: 10,
+    &#34;status&#34;: &#34;healthy&#34;
+}]</pre></td></tr></table>
+</div>
+</div>
+<p><sup>401</sup>&frasl;<sub>500</sub> Error</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+    &#34;code&#34;: 500,
+    &#34;err&#34;: &#34;short error message&#34;,
+    &#34;description&#34;: &#34;detailed error message&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<h2 id="main-go">main.go</h2>
+
+<p>获取配置信息，创建<code>root context</code>，给<code>root context</code>配置日志记录器，创建<code>job context</code>，最后启动服务接受请求。</p>
+
+<p>启动<code>jobservice</code>组件是通过这行代码的，在<code>LoadAndRun</code>中完成了启动的所有工作，接来按照此方法的执行过程来了解<code>jobservice</code>的启动逻辑。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">	runtime.JobService.LoadAndRun(ctx, cancel)</pre></td></tr></table>
+</div>
+</div>
+<h3 id="loadandrun-方法">LoadAndRun 方法</h3>
+
+<p><code>LoadAndRun</code>是<code>boostrap</code>文件中的一个方法，用来导入所有的配置，初始化所有的组件以及相关的进程，来为发往<code>jobservice</code>的请求服务。</p>
+
+<p>首先对<code>main.go</code>传入来的<code>context</code>进行包装为其附带上<code>WaitGroup</code>和错误处理通道的信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">rootContext</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">env</span><span class="p">.</span><span class="nx">Context</span><span class="p">{</span>
+		<span class="nx">SystemContext</span><span class="p">:</span> <span class="nx">ctx</span><span class="p">,</span>
+		<span class="nx">WG</span><span class="p">:</span>            <span class="o">&amp;</span><span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span><span class="p">{},</span>
+		<span class="nx">ErrorChan</span><span class="p">:</span>     <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="c1">// with 1 buffer
+</span><span class="c1"></span>	<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>使用上述的 <code>rootcontext</code>初始化服务特定 job 的<code>jobcontext</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">jobCtx</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">bs</span><span class="p">.</span><span class="nf">jobConextInitializer</span><span class="p">(</span><span class="nx">rootContext</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在完成上述的 <code>context</code> 的准备工作后，初始化并启动 redis worker pool，这是用来为传入来的 job 分为处理器的。通过调用<code>boostrap</code>的<code>loadAndRunRedisWorkerPool</code>方法来实现。</p>
+
+<p>在<code>loadAndRunRedisWorkerPool</code>方法中首先设置了<code>redispool</code>的一些必要参数入如：最大活动数，最大的空闲连接数，健康监测函数等。然后调用<code>NewGoCraftWorkPool</code>方法实例化<code>redisworkerpool</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">	<span class="nx">redisWorkerPool</span> <span class="o">:=</span> <span class="nx">pool</span><span class="p">.</span><span class="nf">NewGoCraftWorkPool</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;{%s}&#34;</span><span class="p">,</span> <span class="nx">cfg</span><span class="p">.</span><span class="nx">PoolConfig</span><span class="p">.</span><span class="nx">RedisPoolCfg</span><span class="p">.</span><span class="nx">Namespace</span><span class="p">),</span>
+		<span class="nx">cfg</span><span class="p">.</span><span class="nx">PoolConfig</span><span class="p">.</span><span class="nx">WorkerCount</span><span class="p">,</span>
+		<span class="nx">redisPool</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>完成实例化后，接着往<code>redisWorkerPool</code>中注册需要处理的各种 job 类型，在<code>harbor</code>中总共注册了一下 6 种类型的<code>job</code>。在二次开发中为<code>jobservice</code>增加新的<code>job</code>时需要在这进行注册。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">if err := redisWorkerPool.RegisterJobs(
+		map[string]interface{}{
+			job.ImageScanJob:    (*scan.ClairJob)(nil),
+			job.ImageScanAllJob: (*scan.All)(nil),
+			job.ImageTransfer:   (*replication.Transfer)(nil),
+			job.ImageDelete:     (*replication.Deleter)(nil),
+			job.ImageReplicate:  (*replication.Replicator)(nil),
+			job.ImageGC:         (*gc.GarbageCollector)(nil),
+		})</pre></td></tr></table>
+</div>
+</div>
+<p>完成上述准备工作之后，调用<code>redisWorkerPool</code>的<code>start()</code>函数。<code>start</code>方法主要完成以下几个工作：
+- 注册<code>GoCraftWorkPool</code>中<code>messageServer</code>的对各种<code>job</code>处理函数
+- 启动<code>messageServer</code>服务器
+- 启动<code>JobStatsManager</code>管理器
+- 启动周期性任务的调度器
+- 给<code>redisWorkerPool</code>的<code>pool</code>增加日志记录器
+- 最后调用<code>pool</code>的<code>Start</code>方法正式启动<code>worker pool</code></p>
+
+<p>上面的这些操作完成了<code>loadAndRunRedisWorkerPool</code>方法并赋值给<code>backendPool</code>。接着初始化<code>bankendpool</code>的控制器。给<code>rootcontext</code>带上启动 <code>job</code> 的启动处理函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">	<span class="nx">rootContext</span><span class="p">.</span><span class="nx">SystemContext</span> <span class="p">=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithValue</span><span class="p">(</span><span class="nx">rootContext</span><span class="p">.</span><span class="nx">SystemContext</span><span class="p">,</span> <span class="nx">utils</span><span class="p">.</span><span class="nx">CtlKeyOfLaunchJobFunc</span><span class="p">,</span> <span class="nx">launchJobFunc</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里介绍一下<code>launchJobFunc</code>功能的实现。
+- 这里的启动的 job 函数实现了<code>core interface</code>。首先会验证<code>req</code>的合理性也就是说只有符合要求的请求才会被处理
+- 验证完合理性之后开始从<code>backendPool</code>中检查<code>req</code>中所表示的 <code>job name</code>是否注册在其中
+- 验证完名字之后验证此<code>job</code>的类型和<code>req</code>中的参数是否相符合。
+- 根据 job 类型不同将其放入不同的调度队列中。分为三种分别为计划性任务、周期性任务以及默认类型的任务。
+- 最后根据<code>req</code>中的<code>StatusHook</code>参数来判断是否开启<code>hook</code>功能
+上述几点就是启动<code>job</code>的全部流程。</p>
+
+<p>给<code>rootcontext</code>带上启动 <code>job</code> 的处理函数后开始启动<code>API server</code>。<code>API server</code>是<code>jobservice</code>对外提供服务的入口，请求的到来都是通过这里路由然后在转交给具体的处理函数来处理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">	<span class="nx">apiServer</span> <span class="o">:=</span> <span class="nx">bs</span><span class="p">.</span><span class="nf">loadAndRunAPIServer</span><span class="p">(</span><span class="nx">rootContext</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">DefaultConfig</span><span class="p">,</span> <span class="nx">ctl</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="api-server">API Server</h4>
+
+<p>启动<code>API Server</code>的函数如下，需要传入<code>ctx</code>，配置信息以及<code>bookedpool</code>的控制器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nf">loadAndRunAPIServer</span><span class="p">(</span><span class="nx">ctx</span> <span class="o">*</span><span class="nx">env</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">cfg</span> <span class="o">*</span><span class="nx">config</span><span class="p">.</span><span class="nx">Configuration</span><span class="p">,</span> <span class="nx">ctl</span> <span class="o">*</span><span class="nx">core</span><span class="p">.</span><span class="nx">Controller</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>为了内部组件之间的通信安全，需要在<code>api server</code>中创建授权器。同时为了能够处理传来的各种<code>job</code>需要<code>handler</code>来处理任务。有了这二项信息就可以创建基础路由了，其中的<code>handler</code>就是传入进行的<code>bookedpool</code>的控制器，<code>authProvider</code>提供了认证的方法。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go">	<span class="nx">router</span> <span class="o">:=</span> <span class="nx">api</span><span class="p">.</span><span class="nf">NewBaseRouter</span><span class="p">(</span><span class="nx">handler</span><span class="p">,</span> <span class="nx">authProvider</span><span class="p">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>接着就是获取<code>api server</code>的协议类型以及暴露接口，有了这些信息后就可以正式创建服务器了。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">	server := api.NewServer(ctx, router, serverConfig)</pre></td></tr></table>
+</div>
+</div>
+<hr />
+
+<p>在启动完<code>API Server</code>之后，<code>jobservice</code>就可以正式对外提供服务了。在<code>jobservice</code>的启动过程中，主要完成了二件事：
+1. 对后端<code>redis worker pool</code>的配置，注册不同的类型的 job，定义消息通信的方式，使其正常工作。
+2. 启动<code>API Server</code>，将<code>jobservice</code>的功能对外暴露。</p>
+
+<p>上述就是完整的 <code>jobservice</code> 启动过程，接下的几篇将详细解析<code>jobservice</code>中其他的实现。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">十三画生</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-16
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/harbor/">harbor</a>
+          <a href="/tags/golang/">Golang</a>
+          <a href="/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/">
+            <span class="next-text nav-default">开发链路的安全</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="cx94758428042@email.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/chenxull" class="iconfont icon-github" title="github"></a>
+  <a href="https://chenxull.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">十三画生</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
