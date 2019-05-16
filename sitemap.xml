@@ -192,19 +192,6 @@
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/my-first-post/</loc>
-    <lastmod>2019-05-15T11:26:42+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://chenxull.github.io/tags/%E6%B5%8B%E8%AF%95/</loc>
-    <lastmod>2019-05-15T11:26:42+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://chenxull.github.io/categories/</loc>
     <priority>0</priority>
   </url>

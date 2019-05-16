@@ -48,7 +48,7 @@
     </item>
     
     <item>
-      <title>Harbor core 文件夹分析</title>
+      <title>Harbor 之 core 解析 (一)</title>
       <link>https://chenxull.github.io/post/harbor_core/</link>
       <pubDate>Wed, 15 May 2019 13:53:31 +0800</pubDate>
       
@@ -153,15 +153,6 @@
       
       <guid>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/</guid>
       <description>HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。</description>
-    </item>
-    
-    <item>
-      <title>My First Post</title>
-      <link>https://chenxull.github.io/post/my-first-post/</link>
-      <pubDate>Wed, 15 May 2019 11:26:42 +0800</pubDate>
-      
-      <guid>https://chenxull.github.io/post/my-first-post/</guid>
-      <description>测试 查看界面样式 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 func WaitForManifestReady(repository string, tag string, maxRetry int) bool { // The initial wait interval, hard-coded to 50ms interval := 50 * time.Millisecond repoClient, err := NewRepositoryClientForUI(&amp;#34;harbor-core&amp;#34;, repository) if err != nil { log.Errorf(&amp;#34;Failed to create repo client.&amp;#34;) return</description>
     </item>
     
   </channel>
