@@ -1,211 +1,211 @@
-<?xml-stylesheet type="text/xsl" href="https://chenxull.github.io/sitemap.xsl"?>
+<?xml-stylesheet type="text/xsl" href="http://www.chenxull.com/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://chenxull.github.io/tags/</loc>
+    <loc>http://www.chenxull.com/tags/</loc>
     <lastmod>2019-05-16T14:49:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/about/</loc>
+    <loc>http://www.chenxull.com/about/</loc>
     <lastmod>2019-05-16T14:49:12+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/</loc>
+    <loc>http://www.chenxull.com/</loc>
     <lastmod>2019-05-16T14:49:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/</loc>
+    <loc>http://www.chenxull.com/tags/</loc>
     <lastmod>2019-05-16T14:49:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/golang/</loc>
+    <loc>http://www.chenxull.com/tags/golang/</loc>
     <lastmod>2019-05-16T14:39:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/</loc>
+    <loc>http://www.chenxull.com/post/</loc>
     <lastmod>2019-05-16T14:39:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/harbor/</loc>
+    <loc>http://www.chenxull.com/tags/harbor/</loc>
     <lastmod>2019-05-16T14:39:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/jobservice_part1/</loc>
+    <loc>http://www.chenxull.com/post/jobservice_part1/</loc>
     <lastmod>2019-05-16T14:39:49+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/%E6%BA%90%E7%A0%81/</loc>
+    <loc>http://www.chenxull.com/tags/%E6%BA%90%E7%A0%81/</loc>
     <lastmod>2019-05-16T14:39:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/ci/cd/</loc>
+    <loc>http://www.chenxull.com/tags/ci/cd/</loc>
     <lastmod>2019-05-15T14:08:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/%E5%AE%B9%E5%99%A8/</loc>
+    <loc>http://www.chenxull.com/tags/%E5%AE%B9%E5%99%A8/</loc>
     <lastmod>2019-05-15T14:08:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</loc>
+    <loc>http://www.chenxull.com/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</loc>
     <lastmod>2019-05-15T14:08:35+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/angular/</loc>
+    <loc>http://www.chenxull.com/tags/angular/</loc>
     <lastmod>2019-05-15T13:59:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/angular/</loc>
+    <loc>http://www.chenxull.com/post/angular/</loc>
     <lastmod>2019-05-15T13:59:54+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/%E5%AD%A6%E4%B9%A0/</loc>
+    <loc>http://www.chenxull.com/tags/%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2019-05-15T13:59:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/harbor_common/</loc>
+    <loc>http://www.chenxull.com/post/harbor_common/</loc>
     <lastmod>2019-05-15T13:53:45+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/harbor_core/</loc>
+    <loc>http://www.chenxull.com/post/harbor_core/</loc>
     <lastmod>2019-05-15T13:53:31+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/</loc>
+    <loc>http://www.chenxull.com/post/design_philosophy_on_data_and_semantics/</loc>
     <lastmod>2019-05-15T13:48:51+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/%E7%BF%BB%E8%AF%91/</loc>
+    <loc>http://www.chenxull.com/tags/%E7%BF%BB%E8%AF%91/</loc>
     <lastmod>2019-05-15T13:48:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/language_mechanics_on_memory_profiling/</loc>
+    <loc>http://www.chenxull.com/post/language_mechanics_on_memory_profiling/</loc>
     <lastmod>2019-05-15T13:48:29+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/language_mechanics_on_escape_analysis/</loc>
+    <loc>http://www.chenxull.com/post/language_mechanics_on_escape_analysis/</loc>
     <lastmod>2019-05-15T13:48:06+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/behavior_of_channels/</loc>
+    <loc>http://www.chenxull.com/post/behavior_of_channels/</loc>
     <lastmod>2019-05-15T13:47:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/interface_values_are_valueless/</loc>
+    <loc>http://www.chenxull.com/post/interface_values_are_valueless/</loc>
     <lastmod>2019-05-15T13:47:23+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/interface_semantics/</loc>
+    <loc>http://www.chenxull.com/post/interface_semantics/</loc>
     <lastmod>2019-05-15T13:47:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/go_concurrency/</loc>
+    <loc>http://www.chenxull.com/post/go_concurrency/</loc>
     <lastmod>2019-05-15T13:42:10+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/go_scheduler/</loc>
+    <loc>http://www.chenxull.com/post/go_scheduler/</loc>
     <lastmod>2019-05-15T13:41:51+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/os_scheduler/</loc>
+    <loc>http://www.chenxull.com/post/os_scheduler/</loc>
     <lastmod>2019-05-15T13:41:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/docker/</loc>
+    <loc>http://www.chenxull.com/tags/docker/</loc>
     <lastmod>2019-05-15T13:32:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/</loc>
+    <loc>http://www.chenxull.com/post/registry_api_%E6%8E%A5%E5%8F%A32/</loc>
     <lastmod>2019-05-15T13:32:35+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/tags/registry/</loc>
+    <loc>http://www.chenxull.com/tags/registry/</loc>
     <lastmod>2019-05-15T13:32:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/</loc>
+    <loc>http://www.chenxull.com/post/registry_api_%E6%8E%A5%E5%8F%A3/</loc>
     <lastmod>2019-05-15T13:26:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://chenxull.github.io/categories/</loc>
+    <loc>http://www.chenxull.com/categories/</loc>
     <priority>0</priority>
   </url>
   

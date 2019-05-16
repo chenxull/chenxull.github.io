@@ -2,165 +2,165 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Chenxull </title>
-    <link>https://chenxull.github.io/</link>
+    <link>http://www.chenxull.com/</link>
     <description>Recent content on Chenxull </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Thu, 16 May 2019 14:49:12 +0800</lastBuildDate>
     
-	<atom:link href="https://chenxull.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://www.chenxull.com/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>About</title>
-      <link>https://chenxull.github.io/about/</link>
+      <link>http://www.chenxull.com/about/</link>
       <pubDate>Thu, 16 May 2019 14:49:12 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/about/</guid>
+      <guid>http://www.chenxull.com/about/</guid>
       <description></description>
     </item>
     
     <item>
       <title>harbor 之 Jobservice 解析 （一）</title>
-      <link>https://chenxull.github.io/post/jobservice_part1/</link>
+      <link>http://www.chenxull.com/post/jobservice_part1/</link>
       <pubDate>Thu, 16 May 2019 14:39:49 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/jobservice_part1/</guid>
+      <guid>http://www.chenxull.com/post/jobservice_part1/</guid>
       <description>harbor 之 Jobservice 解析 （一） jobservice 是 harbor中用来处理 job 的组件。在 1.75 版本中job 分为三种类型，分别为：GC,Replication，Scan。 因为 jobservice 在后</description>
     </item>
     
     <item>
       <title>开发链路的安全</title>
-      <link>https://chenxull.github.io/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</link>
+      <link>http://www.chenxull.com/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</link>
       <pubDate>Wed, 15 May 2019 14:08:35 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</guid>
+      <guid>http://www.chenxull.com/post/%E4%BE%9B%E5%BA%94%E9%93%BE%E5%AE%89%E5%85%A8/</guid>
       <description>1.The State of Your Supply Chain 在供应链中可能存在依赖的漏洞，包的漏洞，开源软件的漏洞。 故意的漏洞后门 妥协下载 2.容器应用开发的供应链 整个容器分发周期的生命流程</description>
     </item>
     
     <item>
       <title>Angular</title>
-      <link>https://chenxull.github.io/post/angular/</link>
+      <link>http://www.chenxull.com/post/angular/</link>
       <pubDate>Wed, 15 May 2019 13:59:54 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/angular/</guid>
+      <guid>http://www.chenxull.com/post/angular/</guid>
       <description>Angular Angular 程序架构 组件，服务和指令是为了完成功能的；模块是用来打包分发这些功能的 组件 1 2 3 4 5 6 7 8 9 10 import { Component } from &amp;#39;@angular/core&amp;#39;; @Component({ selector: &amp;#39;app-root&amp;#39;, templateUrl: &amp;#39;./app.component.html&amp;#39;, styleUrls: [&amp;#39;./app.component.css&amp;#39;] }) export class AppComponent { title = &amp;#39;auction&amp;#39;;</description>
     </item>
     
     <item>
       <title>Harbor common 文件夹分析</title>
-      <link>https://chenxull.github.io/post/harbor_common/</link>
+      <link>http://www.chenxull.com/post/harbor_common/</link>
       <pubDate>Wed, 15 May 2019 13:53:45 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/harbor_common/</guid>
+      <guid>http://www.chenxull.com/post/harbor_common/</guid>
       <description>common 文件夹分析 ##api 定义了控制器的一些常规操作包括一些错误处理，解析请求中的 json 数据，验证数据，重定向路由，获取请求中的ID，为分页请求设置&amp;rdq</description>
     </item>
     
     <item>
       <title>Harbor 之 core 解析 (一)</title>
-      <link>https://chenxull.github.io/post/harbor_core/</link>
+      <link>http://www.chenxull.com/post/harbor_core/</link>
       <pubDate>Wed, 15 May 2019 13:53:31 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/harbor_core/</guid>
+      <guid>http://www.chenxull.com/post/harbor_core/</guid>
       <description>core 文件夹分析 此文件夹是 harbor 的核心组件。在根目录下有main.go和router.go二个文件。前者用来初始化整个后端项目，后者是对请求的路由处</description>
     </item>
     
     <item>
       <title>Design Philosophy On Data And Semantics Part 4</title>
-      <link>https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/</link>
+      <link>http://www.chenxull.com/post/design_philosophy_on_data_and_semantics/</link>
       <pubDate>Wed, 15 May 2019 13:48:51 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/design_philosophy_on_data_and_semantics/</guid>
+      <guid>http://www.chenxull.com/post/design_philosophy_on_data_and_semantics/</guid>
       <description>Part4 Design Philosophy On Data And Semantics 讨论Go中pointers,stacks,heap,escape analysis 和 value/pointer 语义背后的机制和设计。这篇文章关注数据和在代码中应用值/</description>
     </item>
     
     <item>
       <title>Language Mechanics On Memory Profiling Part 3</title>
-      <link>https://chenxull.github.io/post/language_mechanics_on_memory_profiling/</link>
+      <link>http://www.chenxull.com/post/language_mechanics_on_memory_profiling/</link>
       <pubDate>Wed, 15 May 2019 13:48:29 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/language_mechanics_on_memory_profiling/</guid>
+      <guid>http://www.chenxull.com/post/language_mechanics_on_memory_profiling/</guid>
       <description>Part3 Language Mechanics On Memory Profiling 这篇博文的重点集中在algone函数上因为其使用了io包。使用 algTwo 功能测试内存和 cpu 配置. 下面这个是测试数据: 1 2 3 4 5 6 7 Input: abcelvisaElvisabcelviseelvisaelvisaabeeeelvise l v</description>
     </item>
     
     <item>
       <title>Language Mechanics On Escape Analysis Part2</title>
-      <link>https://chenxull.github.io/post/language_mechanics_on_escape_analysis/</link>
+      <link>http://www.chenxull.com/post/language_mechanics_on_escape_analysis/</link>
       <pubDate>Wed, 15 May 2019 13:48:06 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/language_mechanics_on_escape_analysis/</guid>
+      <guid>http://www.chenxull.com/post/language_mechanics_on_escape_analysis/</guid>
       <description>Language Mechanics On Escape Analysis 原文 逃逸分析是编译器用来确定程序创建的值的位置的过程。具体来说，编译器执行代码静态扫描来确定一个值是否可以可以放在构造它的函数的s</description>
     </item>
     
     <item>
       <title>Golang 中 Channel 的特点</title>
-      <link>https://chenxull.github.io/post/behavior_of_channels/</link>
+      <link>http://www.chenxull.com/post/behavior_of_channels/</link>
       <pubDate>Wed, 15 May 2019 13:47:40 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/behavior_of_channels/</guid>
+      <guid>http://www.chenxull.com/post/behavior_of_channels/</guid>
       <description>The Behavior Of Channels 当我第一次开始使用Go的通道时，我犯了一个错误，把channels看作一个数据结构。我把channels看作一个队列，在gorout</description>
     </item>
     
     <item>
       <title>Golang 中的 Interface Value 是 Valueless</title>
-      <link>https://chenxull.github.io/post/interface_values_are_valueless/</link>
+      <link>http://www.chenxull.com/post/interface_values_are_valueless/</link>
       <pubDate>Wed, 15 May 2019 13:47:23 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/interface_values_are_valueless/</guid>
+      <guid>http://www.chenxull.com/post/interface_values_are_valueless/</guid>
       <description>Interface Values Are Valueless 简介 最近我在Slack上看到了很多关于接口的问题。大多数情况下，答案都是技术性的，并侧重于实施细节。实现对帮助调试很重要，但是实现对</description>
     </item>
     
     <item>
       <title>Golang 中的 interface Semantics</title>
-      <link>https://chenxull.github.io/post/interface_semantics/</link>
+      <link>http://www.chenxull.com/post/interface_semantics/</link>
       <pubDate>Wed, 15 May 2019 13:47:00 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/interface_semantics/</guid>
+      <guid>http://www.chenxull.com/post/interface_semantics/</guid>
       <description>Interface Semantics 值和指针语义的概念在Go随处可见。正如前面的文章所述，语义一致性对于完整性和可读性至关重要。随着代码库的不断增长，它允许开发人员维护一个</description>
     </item>
     
     <item>
       <title>Golang 中的并发 Part III</title>
-      <link>https://chenxull.github.io/post/go_concurrency/</link>
+      <link>http://www.chenxull.com/post/go_concurrency/</link>
       <pubDate>Wed, 15 May 2019 13:42:10 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/go_concurrency/</guid>
+      <guid>http://www.chenxull.com/post/go_concurrency/</guid>
       <description>Part III - Concurrency 这篇博文关注于并发 简介 当我在解决一个问题时，特别是如果这是一个新问题，我最初不会考虑并发性是否合适。我首先寻找顺序解决方案，并确保它</description>
     </item>
     
     <item>
       <title>Golang 中的调度 Part II</title>
-      <link>https://chenxull.github.io/post/go_scheduler/</link>
+      <link>http://www.chenxull.com/post/go_scheduler/</link>
       <pubDate>Wed, 15 May 2019 13:41:51 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/go_scheduler/</guid>
+      <guid>http://www.chenxull.com/post/go_scheduler/</guid>
       <description>Part II - Go Scheduler 这是三部分系列中的第二篇文章，它将提供对Go中调度器背后的机制和语义的理解。这篇文章的重点是go程序。 简介 在这个调度系列的第一部分</description>
     </item>
     
     <item>
       <title>操作系统调度 Part I</title>
-      <link>https://chenxull.github.io/post/os_scheduler/</link>
+      <link>http://www.chenxull.com/post/os_scheduler/</link>
       <pubDate>Wed, 15 May 2019 13:41:34 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/os_scheduler/</guid>
+      <guid>http://www.chenxull.com/post/os_scheduler/</guid>
       <description>Part I - 操作系统调度 简介 多线程程序是如何正确的调度工作的,在这里作者给出了很多详细的例子一步步深入。 OS Scheduler 您的程序只是一系列需要一个接一个顺序执</description>
     </item>
     
     <item>
       <title>Docker Registry API V2 接口解析（二）</title>
-      <link>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/</link>
+      <link>http://www.chenxull.com/post/registry_api_%E6%8E%A5%E5%8F%A32/</link>
       <pubDate>Wed, 15 May 2019 13:32:35 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A32/</guid>
+      <guid>http://www.chenxull.com/post/registry_api_%E6%8E%A5%E5%8F%A32/</guid>
       <description>HTTP API V2 接口解析 1. API Version Check 2. Content Digests 这种设计的核心是内容可寻址标识符的概念。它通过对字节进行hash散列来唯一标识内容。这种标识符可以通过选择通用算</description>
     </item>
     
     <item>
       <title>Docker Registry API V2 接口解析（一）</title>
-      <link>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/</link>
+      <link>http://www.chenxull.com/post/registry_api_%E6%8E%A5%E5%8F%A3/</link>
       <pubDate>Wed, 15 May 2019 13:26:42 +0800</pubDate>
       
-      <guid>https://chenxull.github.io/post/registry_api_%E6%8E%A5%E5%8F%A3/</guid>
+      <guid>http://www.chenxull.com/post/registry_api_%E6%8E%A5%E5%8F%A3/</guid>
       <description>HTTP API V2 接口详细解析 1. 所有方法 和URL列表 Method Path Entity Description GET /v2 Base 检查端点是否实现了Docker注册表API V2。 GET /v2/tags/list Tags 获取由名称标识的存储库下的标签。</description>
     </item>
     

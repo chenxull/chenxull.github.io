@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://chenxull.github.io/sitemap.xml
+Sitemap: http://www.chenxull.com/sitemap.xml
