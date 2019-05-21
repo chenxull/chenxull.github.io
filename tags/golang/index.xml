@@ -6,10 +6,19 @@
     <description>Recent content in Golang on Chenxull </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 16 May 2019 14:39:49 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 21 May 2019 10:03:51 +0800</lastBuildDate>
     
 	<atom:link href="http://www.chenxull.com/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Jobservice_part2</title>
+      <link>http://www.chenxull.com/post/jobservice_part2/</link>
+      <pubDate>Tue, 21 May 2019 10:03:51 +0800</pubDate>
+      
+      <guid>http://www.chenxull.com/post/jobservice_part2/</guid>
+      <description>harbor 之 Jobservice 解析 （二） 整理 api 入口对各种请求是如何处理的以及如何启动具体的任务。重点分析了镜像扫描任务的实现。 core 在interface.go中抽象了对</description>
+    </item>
     
     <item>
       <title>harbor 之 Jobservice 解析 （一）</title>
